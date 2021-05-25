@@ -1,21 +1,18 @@
 {
   "format": 1,
   "restore": {
-    "C:\\CongViec\\WebBase\\WebBase\\WebBase\\WebBase.csproj": {}
+    "C:\\CongViec\\WebBase\\src\\WebBase\\WebBase.csproj": {}
   },
   "projects": {
-    "C:\\CongViec\\WebBase\\WebBase\\WebBase\\WebBase.csproj": {
+    "C:\\CongViec\\WebBase\\src\\WebBase\\WebBase.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\CongViec\\WebBase\\WebBase\\WebBase\\WebBase.csproj",
+        "projectUniqueName": "C:\\CongViec\\WebBase\\src\\WebBase\\WebBase.csproj",
         "projectName": "WebBase",
-        "projectPath": "C:\\CongViec\\WebBase\\WebBase\\WebBase\\WebBase.csproj",
+        "projectPath": "C:\\CongViec\\WebBase\\src\\WebBase\\WebBase.csproj",
         "packagesPath": "C:\\Users\\haitc\\.nuget\\packages\\",
-        "outputPath": "C:\\CongViec\\WebBase\\WebBase\\WebBase\\obj\\",
+        "outputPath": "C:\\CongViec\\WebBase\\src\\WebBase\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\haitc\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"

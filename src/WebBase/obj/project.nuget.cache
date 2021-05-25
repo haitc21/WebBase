@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "fg4MZajrxIZDdUX2l2Z4mbejDViCANlP3gc/DP5V4ezskuOyYSBBC3RDQ8KPhuP2DIYARcBF5l4Kjih9Wd/7wg==",
+  "dgSpecHash": "4qK6aqNdpgLQQs1pel8RBjpbJmIIR9OtLctxEVbKhcjEk5QpKL0vHTeYx14TCSKHjYv+v1dApCh6ev8txMj+lA==",
   "success": true,
-  "projectFilePath": "C:\\CongViec\\WebBase\\WebBase\\WebBase\\WebBase.csproj",
+  "projectFilePath": "C:\\CongViec\\WebBase\\src\\WebBase\\WebBase.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
