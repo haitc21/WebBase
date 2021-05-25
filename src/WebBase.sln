@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebBase", "WebBase\WebBase.csproj", "{796BA1E7-0B43-4AB7-8481-EC4EA5198A98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewModel", "ViewModel\ViewModel.csproj", "{B140C3A2-7AF1-4D8C-9D24-A1BE8F8EC399}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ViewModel", "ViewModel\ViewModel.csproj", "{B140C3A2-7AF1-4D8C-9D24-A1BE8F8EC399}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
