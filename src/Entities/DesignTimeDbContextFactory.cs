@@ -19,7 +19,6 @@ namespace Entities
                 .SetBasePath(Directory.GetCurrentDirectory()) //Microsoft.Configuration.File
                 .AddJsonFile("appsettings.json") //Microsoft.Configuration.Json
                  //.AddJsonFile($"appsettings.{environmentName}.json")
-                .AddJsonFile($"appsettings.json")
                 .Build();
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             var connectionString = configuration.GetConnectionString("DefaultConnection");
