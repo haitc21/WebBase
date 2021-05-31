@@ -1,5 +1,6 @@
 ﻿using Entities.Configurations;
 using Entities.Entities;
+using Entities.Extensions;
 using Entities.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    public class ApplicationDbContext : IdentityDbContext<User>
+    public class ApplicationDbContext : IdentityDbContext<AppUser,AppRole,Guid>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
@@ -45,11 +46,27 @@ namespace Entities
         {
             base.OnModelCreating(builder);
 
+            // Custom entities by Fluent API
             builder.Entity<IdentityRole>().Property(x => x.Id).HasMaxLength(50).IsUnicode(false);
-            builder.Entity<User>().Property(x => x.Id).HasMaxLength(50).IsUnicode(false);
             builder.ApplyConfiguration(new CommandInFunctionConfig());
             builder.ApplyConfiguration(new PermissionConfig());
-            builder.HasSequence("WebBase");
+            builder.ApplyConfiguration(new AppUserConfig());
+            builder.ApplyConfiguration(new AppRoleConfig());
+
+            // identity
+            builder.Entity<IdentityUserClaim<Guid>>().ToTable("AppUserClaims");
+            builder.Entity<IdentityRoleClaim<Guid>>().ToTable("AppRoleClaims");
+            builder.Entity<IdentityUserRole<Guid>>().ToTable("AppUserRoles")
+                .HasKey(x => new { x.UserId, x.RoleId });
+            builder.Entity<IdentityUserLogin<Guid>>().ToTable("AppUserLogins")
+                .HasKey(x => x.UserId);
+            builder.Entity<IdentityUserToken<Guid>>().ToTable("AppUserTokens")
+                .HasKey(x => x.UserId);
+
+            // Seeding data
+            builder.Seed();
+
+            //builder.HasSequence("WebBase");
         }
 
         public DbSet<Command> Commands { set; get; }
