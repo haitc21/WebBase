@@ -17,7 +17,7 @@ namespace Entities.Configurations
 
             builder.Property(x => x.CommandId).HasMaxLength(50).IsUnicode(true).IsRequired();
 
-            builder.Property(x => x.Function).HasMaxLength(50).IsUnicode(true).IsRequired();
+            builder.Property(x => x.FunctionId).HasMaxLength(50).IsUnicode(true).IsRequired();
 
             builder.HasKey(x => new { x.CommandId, x.FunctionId });
 

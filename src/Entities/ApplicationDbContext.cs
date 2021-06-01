@@ -66,7 +66,7 @@ namespace Entities
             // Seeding data
             builder.Seed();
 
-            //builder.HasSequence("WebBase");
+            builder.HasSequence("WebBase");
         }
 
         public DbSet<Command> Commands { set; get; }
