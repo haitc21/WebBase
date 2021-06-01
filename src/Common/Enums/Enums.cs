@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace Common.Enums
 {
-    class Status
+    public class Enums
     {
+        public enum Status : int
+        {
+            Deleted = -2,
+            UnActived = 0,
+            Activied = 1
+        }
     }
 }

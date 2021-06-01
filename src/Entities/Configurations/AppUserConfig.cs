@@ -1,4 +1,5 @@
-﻿using Entities.Entities;
+﻿using Common.Enums;
+using Entities.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -17,6 +18,7 @@ namespace Entities.Configurations
             builder.Property(x => x.FirstName).HasMaxLength(250).IsRequired();
             builder.Property(x => x.LastName).HasMaxLength(250).IsRequired();
             builder.Property(x => x.Dob).IsRequired();
+            builder.Property(x => x.Status).IsRequired().HasDefaultValue(Enums.Status.UnActived);
         }
     }
 }

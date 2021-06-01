@@ -1,4 +1,5 @@
-﻿using Entities.Entities;
+﻿using Common.Enums;
+using Entities.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace Entities.Extensions
                 new AppRole() { Id = adminRoleId, Name = "Admin", NormalizedName = "ADMIN", Description = "Admin role" },
                 new AppRole() { Id = auserRoleId, Name = "User", NormalizedName = "USER", Description = "User role" }
                 );
-            DateTime dob = DateTime.Now;
+            DateTime dob = DateTime.Now.AddYears(-25);
             builder.Entity<AppUser>().HasData(
                 new AppUser()
                 {
@@ -38,8 +39,10 @@ namespace Entities.Extensions
                     FirstName = "Quản trị",
                     LastName = "tranhai",
                     Email = "hai.tc21@gmail.com",
-                    PasswordHash = "aDMIN@123",
-                    Dob = dob
+                    PasswordHash = "Adin@123",
+                    Dob = dob,
+                    Status = (int)Enums.Status.Activied,
+                    CreateDate = DateTime.Now
                 },
                  new AppUser()
                  {
@@ -48,7 +51,10 @@ namespace Entities.Extensions
                      FirstName = "Trần",
                      LastName = "Hải",
                      Email = "hai.tc21@gmail.com",
-                     Dob = dob
+                     PasswordHash = "TranHai@123",
+                     Dob = dob,
+                     Status = (int)Enums.Status.UnActived,
+                     CreateDate = DateTime.Now
                  }
                );
             var lstFuncts = new List<Function>()

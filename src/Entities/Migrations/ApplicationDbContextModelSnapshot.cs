@@ -97,16 +97,16 @@ namespace Entities.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("2ba7403d-9288-4661-9450-5e27d0d5e183"),
-                            ConcurrencyStamp = "d4e46879-b035-426c-ac1c-8fc857509d24",
+                            Id = new Guid("3ed19606-89ca-4b55-bba0-0113b29cf942"),
+                            ConcurrencyStamp = "d448c8a1-bd7b-45cc-9304-9ad2a3810c10",
                             Description = "Admin role",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("412eb2fd-25a7-4293-b04b-14b5ad4bc6cc"),
-                            ConcurrencyStamp = "9e86498b-3beb-4234-b8c4-a316eb79a596",
+                            Id = new Guid("9ba2e58e-e9c4-47ec-abc8-19424de0f514"),
+                            ConcurrencyStamp = "cbdf5a23-028b-476e-b4d1-1a498ef98a86",
                             Description = "User role",
                             Name = "User",
                             NormalizedName = "USER"
@@ -178,6 +178,11 @@ namespace Entities.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -200,34 +205,37 @@ namespace Entities.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("09e9083f-69b6-499e-9eb0-723f2ec0a875"),
+                            Id = new Guid("efbaa475-bd9b-4f3f-a2fe-3b3b66e22558"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "18e13a3e-2f75-4eed-bcd6-abf385eba8a0",
-                            CreateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Dob = new DateTime(2021, 6, 1, 18, 18, 27, 569, DateTimeKind.Local).AddTicks(1102),
+                            ConcurrencyStamp = "52ae24c6-4caa-4b44-8a4b-f8867c2a92f8",
+                            CreateDate = new DateTime(2021, 6, 1, 22, 27, 58, 778, DateTimeKind.Local).AddTicks(635),
+                            Dob = new DateTime(1996, 6, 1, 22, 27, 58, 777, DateTimeKind.Local).AddTicks(4306),
                             Email = "hai.tc21@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Quản trị",
                             LastName = "tranhai",
                             LockoutEnabled = false,
-                            PasswordHash = "aDMIN@123",
+                            PasswordHash = "Adin@123",
                             PhoneNumberConfirmed = false,
+                            Status = 1,
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         },
                         new
                         {
-                            Id = new Guid("60751aed-eb56-479d-adc6-7390248ff086"),
+                            Id = new Guid("9041deb1-983b-4fea-a3d6-905c988b22a4"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "89bff26a-175a-46b0-8c27-3679a77057af",
-                            CreateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Dob = new DateTime(2021, 6, 1, 18, 18, 27, 569, DateTimeKind.Local).AddTicks(1102),
+                            ConcurrencyStamp = "efb4c71f-255c-4917-829f-e223e5c1b6b8",
+                            CreateDate = new DateTime(2021, 6, 1, 22, 27, 58, 778, DateTimeKind.Local).AddTicks(996),
+                            Dob = new DateTime(1996, 6, 1, 22, 27, 58, 777, DateTimeKind.Local).AddTicks(4306),
                             Email = "hai.tc21@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Trần",
                             LastName = "Hải",
                             LockoutEnabled = false,
+                            PasswordHash = "TranHai@123",
                             PhoneNumberConfirmed = false,
+                            Status = 0,
                             TwoFactorEnabled = false,
                             UserName = "TranHai"
                         });
@@ -525,145 +533,145 @@ namespace Entities.Migrations
                         new
                         {
                             CommandId = "CREATE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "DASHBOARD"
                         },
                         new
                         {
                             CommandId = "UPDATE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "DASHBOARD"
                         },
                         new
                         {
                             CommandId = "DELETE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "DASHBOARD"
                         },
                         new
                         {
                             CommandId = "VIEW",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "DASHBOARD"
                         },
                         new
                         {
                             CommandId = "CREATE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM"
                         },
                         new
                         {
                             CommandId = "UPDATE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM"
                         },
                         new
                         {
                             CommandId = "DELETE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM"
                         },
                         new
                         {
                             CommandId = "VIEW",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM"
                         },
                         new
                         {
                             CommandId = "CREATE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_USER"
                         },
                         new
                         {
                             CommandId = "UPDATE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_USER"
                         },
                         new
                         {
                             CommandId = "DELETE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_USER"
                         },
                         new
                         {
                             CommandId = "VIEW",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_USER"
                         },
                         new
                         {
                             CommandId = "CREATE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_ROLE"
                         },
                         new
                         {
                             CommandId = "UPDATE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_ROLE"
                         },
                         new
                         {
                             CommandId = "DELETE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_ROLE"
                         },
                         new
                         {
                             CommandId = "VIEW",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_ROLE"
                         },
                         new
                         {
                             CommandId = "CREATE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_FUNCTION"
                         },
                         new
                         {
                             CommandId = "UPDATE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_FUNCTION"
                         },
                         new
                         {
                             CommandId = "DELETE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_FUNCTION"
                         },
                         new
                         {
                             CommandId = "VIEW",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_FUNCTION"
                         },
                         new
                         {
                             CommandId = "CREATE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_PERMISSION"
                         },
                         new
                         {
                             CommandId = "UPDATE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_PERMISSION"
                         },
                         new
                         {
                             CommandId = "DELETE",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_PERMISSION"
                         },
                         new
                         {
                             CommandId = "VIEW",
-                            RoleId = "2ba7403d-9288-4661-9450-5e27d0d5e183",
+                            RoleId = "3ed19606-89ca-4b55-bba0-0113b29cf942",
                             FunctionId = "SYSTEM_PERMISSION"
                         });
                 });

@@ -14,6 +14,7 @@ namespace Entities.Entities
         public string LastName { get; set; }
         public DateTime Dob { get; set; }
         public DateTime CreateDate { get; set; }
+        public int Status { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }
 }

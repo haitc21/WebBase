@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Entities.Migrations
 {
-    public partial class initialDB : Migration
+    public partial class CreateDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -53,6 +53,7 @@ namespace Entities.Migrations
                     LastName = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Dob = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     LastModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -264,18 +265,19 @@ namespace Entities.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Description", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("2ba7403d-9288-4661-9450-5e27d0d5e183"), "d4e46879-b035-426c-ac1c-8fc857509d24", "Admin role", "Admin", "ADMIN" },
-                    { new Guid("412eb2fd-25a7-4293-b04b-14b5ad4bc6cc"), "9e86498b-3beb-4234-b8c4-a316eb79a596", "User role", "User", "USER" }
+                    { new Guid("3ed19606-89ca-4b55-bba0-0113b29cf942"), "d448c8a1-bd7b-45cc-9304-9ad2a3810c10", "Admin role", "Admin", "ADMIN" },
+                    { new Guid("9ba2e58e-e9c4-47ec-abc8-19424de0f514"), "cbdf5a23-028b-476e-b4d1-1a498ef98a86", "User role", "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AppUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CreateDate", "Dob", "Email", "EmailConfirmed", "FirstName", "LastModifiedDate", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "Status", "TwoFactorEnabled", "UserName" },
+                values: new object[] { new Guid("efbaa475-bd9b-4f3f-a2fe-3b3b66e22558"), 0, "52ae24c6-4caa-4b44-8a4b-f8867c2a92f8", new DateTime(2021, 6, 1, 22, 27, 58, 778, DateTimeKind.Local).AddTicks(635), new DateTime(1996, 6, 1, 22, 27, 58, 777, DateTimeKind.Local).AddTicks(4306), "hai.tc21@gmail.com", false, "Quản trị", null, "tranhai", false, null, null, null, "Adin@123", null, false, null, 1, false, "admin" });
+
+            migrationBuilder.InsertData(
+                table: "AppUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CreateDate", "Dob", "Email", "EmailConfirmed", "FirstName", "LastModifiedDate", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[,]
-                {
-                    { new Guid("09e9083f-69b6-499e-9eb0-723f2ec0a875"), 0, "18e13a3e-2f75-4eed-bcd6-abf385eba8a0", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2021, 6, 1, 18, 18, 27, 569, DateTimeKind.Local).AddTicks(1102), "hai.tc21@gmail.com", false, "Quản trị", null, "tranhai", false, null, null, null, "aDMIN@123", null, false, null, false, "admin" },
-                    { new Guid("60751aed-eb56-479d-adc6-7390248ff086"), 0, "89bff26a-175a-46b0-8c27-3679a77057af", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2021, 6, 1, 18, 18, 27, 569, DateTimeKind.Local).AddTicks(1102), "hai.tc21@gmail.com", false, "Trần", null, "Hải", false, null, null, null, null, null, false, null, false, "TranHai" }
-                });
+                values: new object[] { new Guid("9041deb1-983b-4fea-a3d6-905c988b22a4"), 0, "efb4c71f-255c-4917-829f-e223e5c1b6b8", new DateTime(2021, 6, 1, 22, 27, 58, 778, DateTimeKind.Local).AddTicks(996), new DateTime(1996, 6, 1, 22, 27, 58, 777, DateTimeKind.Local).AddTicks(4306), "hai.tc21@gmail.com", false, "Trần", null, "Hải", false, null, null, null, "TranHai@123", null, false, null, false, "TranHai" });
 
             migrationBuilder.InsertData(
                 table: "Commands",
@@ -307,30 +309,30 @@ namespace Entities.Migrations
                 columns: new[] { "CommandId", "FunctionId", "RoleId" },
                 values: new object[,]
                 {
-                    { "CREATE", "SYSTEM_ROLE", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "UPDATE", "SYSTEM_PERMISSION", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "CREATE", "SYSTEM_PERMISSION", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "VIEW", "SYSTEM_FUNCTION", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "DELETE", "SYSTEM_FUNCTION", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "UPDATE", "SYSTEM_FUNCTION", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "CREATE", "SYSTEM_FUNCTION", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "VIEW", "SYSTEM_ROLE", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "DELETE", "SYSTEM_ROLE", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "UPDATE", "SYSTEM_ROLE", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "VIEW", "SYSTEM_USER", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "CREATE", "SYSTEM", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "UPDATE", "SYSTEM_USER", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "CREATE", "SYSTEM_USER", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "VIEW", "SYSTEM", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "DELETE", "SYSTEM", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "UPDATE", "SYSTEM", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "DELETE", "SYSTEM_PERMISSION", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "VIEW", "DASHBOARD", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "DELETE", "DASHBOARD", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "UPDATE", "DASHBOARD", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "CREATE", "DASHBOARD", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "DELETE", "SYSTEM_USER", "2ba7403d-9288-4661-9450-5e27d0d5e183" },
-                    { "VIEW", "SYSTEM_PERMISSION", "2ba7403d-9288-4661-9450-5e27d0d5e183" }
+                    { "CREATE", "SYSTEM_ROLE", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "UPDATE", "SYSTEM_PERMISSION", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "CREATE", "SYSTEM_PERMISSION", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "VIEW", "SYSTEM_FUNCTION", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "DELETE", "SYSTEM_FUNCTION", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "UPDATE", "SYSTEM_FUNCTION", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "CREATE", "SYSTEM_FUNCTION", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "VIEW", "SYSTEM_ROLE", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "DELETE", "SYSTEM_ROLE", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "UPDATE", "SYSTEM_ROLE", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "VIEW", "SYSTEM_USER", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "CREATE", "SYSTEM", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "UPDATE", "SYSTEM_USER", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "CREATE", "SYSTEM_USER", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "VIEW", "SYSTEM", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "DELETE", "SYSTEM", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "UPDATE", "SYSTEM", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "DELETE", "SYSTEM_PERMISSION", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "VIEW", "DASHBOARD", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "DELETE", "DASHBOARD", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "UPDATE", "DASHBOARD", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "CREATE", "DASHBOARD", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "DELETE", "SYSTEM_USER", "3ed19606-89ca-4b55-bba0-0113b29cf942" },
+                    { "VIEW", "SYSTEM_PERMISSION", "3ed19606-89ca-4b55-bba0-0113b29cf942" }
                 });
 
             migrationBuilder.InsertData(
