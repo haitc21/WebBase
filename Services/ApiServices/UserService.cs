@@ -87,6 +87,7 @@ namespace WebBase.Services.ApiServices
             user.FirstName = userUM.FirstName;
             user.PhoneNumber = userUM.PhoneNumber;
             user.Dob = DateTime.Parse(userUM.Dob);
+            user.LastModifiedDate = DateTime.Now;
             var result = await _userManager.UpdateAsync(user);
             return result;
         }

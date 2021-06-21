@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 using WebBase.Models.RequestModels;
@@ -8,10 +7,7 @@ using WebBase.Services.Interfaces;
 
 namespace WebBase.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize("Bearer")]
-    public class RolesController : ControllerBase
+    public class RolesController : BaseController
     {
         private readonly IRoleServices _roleServices;
 
