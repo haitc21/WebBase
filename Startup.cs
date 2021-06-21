@@ -1,10 +1,9 @@
-﻿
+﻿using FluentValidation.AspNetCore;
 using IdentityServer4;
-using WebBase.Data;
-using WebBase.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,13 +11,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
-using FluentValidation.AspNetCore;
-using WebBase.Models.RequestModels;
-using WebBase.Services.Extensions;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using WebBase.Services.Interfaces;
-using WebBase.Services.ApiServices;
+using WebBase.Data;
 using WebBase.Data.Entities;
+using WebBase.Models.Validations;
+using WebBase.Services.ApiServices;
+using WebBase.Services.Extensions;
+using WebBase.Services.Interfaces;
 
 namespace WebBase
 {
@@ -33,7 +31,6 @@ namespace WebBase
 
         public void ConfigureServices(IServiceCollection services)
         {
-
             //var secret = new IdentityServer4.Models.Secret("secret".Sha256());
             //1. Setup entity framework
             // Configuration.GetConnectionString lay trong appsetting.json
@@ -83,7 +80,7 @@ namespace WebBase
                 .AddGoogle(options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                    
+
                     // register your IdentityServer with Google at https://console.developers.google.com
                     // enable the Google+ API
                     // set the redirect URI to https://localhost:5001/signin-google
@@ -130,11 +127,12 @@ namespace WebBase
                 });
             });
             services.AddControllersWithViews()
-                     .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RolsCreateModel>());
+                     .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RolsCreateValid>()); //dang ki tat ca class cung kieu
             // Service
             services.AddTransient<DbInitializer>();
             services.AddTransient<IEmailSender, EmailSenderService>();
             services.AddTransient<IRoleServices, RoleServices>();
+            services.AddTransient<IUserService, UserService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -160,7 +158,6 @@ namespace WebBase
             {
                 endpoints.MapDefaultControllerRoute();
             });
-
 
             app.UseSwagger();
 

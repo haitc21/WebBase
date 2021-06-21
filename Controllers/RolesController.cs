@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using WebBase.Data.Entities;
 using WebBase.Models.RequestModels;
 using WebBase.Models.ViewModels;
 using WebBase.Services.Interfaces;
@@ -15,13 +13,10 @@ namespace WebBase.Controllers
     [Authorize("Bearer")]
     public class RolesController : ControllerBase
     {
-        private readonly RoleManager<AppRole> _roleManager;
         private readonly IRoleServices _roleServices;
 
-        public RolesController(RoleManager<AppRole> roleManager,
-            IRoleServices roleServices)
+        public RolesController(IRoleServices roleServices)
         {
-            _roleManager = roleManager;
             _roleServices = roleServices;
         }
 
@@ -54,6 +49,8 @@ namespace WebBase.Controllers
         public async Task<ActionResult> GetRole(string filter, int pageIndex = 1, int pageSize = 10)
         {
             var pagination = await _roleServices.GetRolePagging(filter, pageIndex, pageSize);
+            if (pagination.totalRecord == 0)
+                return NotFound();
             return Ok(pagination);
         }
 
@@ -73,7 +70,7 @@ namespace WebBase.Controllers
         {
             if (id != roleVM.Id.ToString())
                 return BadRequest();
-            var role = await _roleManager.FindByIdAsync(id);
+            var role = await _roleServices.FindById(id);
             if (role == null)
                 return NotFound();
             var rel = await _roleServices.UpdateRole(role, roleVM);
@@ -88,7 +85,7 @@ namespace WebBase.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteRole(string id)
         {
-            var role = await _roleManager.FindByIdAsync(id);
+            var role = await _roleServices.FindById(id);
             if (role == null)
                 return NotFound();
             var roleVM = new RoleVM()
@@ -97,7 +94,7 @@ namespace WebBase.Controllers
                 Name = role.Name,
                 Description = role.Description
             };
-            var rel = await _roleManager.DeleteAsync(role);
+            var rel = await _roleServices.DeleteRole(role);
             if (rel.Succeeded)
             {
                 return Ok(roleVM);

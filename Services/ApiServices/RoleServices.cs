@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,6 +29,20 @@ namespace WebBase.Services.ApiServices
                 NormalizedName = roleCM.Name.ToUpper()
             };
             var result = await _roleManager.CreateAsync(role);
+            return result;
+        }
+
+        public async Task<IdentityResult> DeleteRole(AppRole role)
+        {
+            var result = await _roleManager.DeleteAsync(role);
+            return result;
+        }
+
+        public async Task<AppRole> FindById(string id)
+        {
+            var result = await _roleManager.FindByIdAsync(id);
+            if (result == null)
+                return null;
             return result;
         }
 

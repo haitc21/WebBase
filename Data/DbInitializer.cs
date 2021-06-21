@@ -63,7 +63,6 @@ namespace WebBase.Data
                     LockoutEnabled = false,
                     Status = (int)Enums.Status.Activied,
                     Dob = DateTime.Parse("1995/12/21")
-
                 }, "Admin@123");
                 if (result.Succeeded)
                 {

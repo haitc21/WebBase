@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
-using WebBase.Data.Entities;
 using WebBase.Models.RequestModels;
+using WebBase.Models.ViewModels;
+using WebBase.Services.Interfaces;
 
 namespace WebBase.Controllers
 {
@@ -14,34 +13,23 @@ namespace WebBase.Controllers
     [Authorize("Bearer")]
     public class UsersController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
+        private readonly IUserService _userService;
 
-        public UsersController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public UsersController(IUserService userService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _userService = userService;
         }
 
         [HttpPost]
         public async Task<IActionResult> PostUser(UserCreateModel request)
         {
-            var user = new AppUser()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Email = request.Email,
-                Dob = DateTime.Parse(request.Dob),
-                UserName = request.UserName,
-                PasswordHash = request.Password,
-                LastName = request.LastName,
-                FirstName = request.FirstName,
-                PhoneNumber = request.PhoneNumber,
-                CreateDate = DateTime.Now,
-            };
-            var result = await _userManager.CreateAsync(user, request.Password);
+            if (!ModelState.IsValid)
+                return BadRequest();
+            string id = Guid.NewGuid().ToString();
+            var result = await _userService.CreateUser(request, id);
             if (result.Succeeded)
             {
-                return CreatedAtAction(nameof(GetById), new { id = user.Id }, request);
+                return CreatedAtAction(nameof(GetById), new { id = id }, request);
             }
             else
             {
@@ -53,15 +41,67 @@ namespace WebBase.Controllers
         [HttpGet]
         public async Task<ActionResult> GetUsers()
         {
-            var users = await _userManager.Users.ToListAsync();
+            var users = await _userService.GetAllUsers();
+            if (users == null)
+                return NotFound();
             return Ok(users);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult> GetById(string id)
         {
-            var users = await _userManager.FindByIdAsync(id);
-            return Ok(users);
+            var user = await _userService.GetUserById(id);
+            if (user == null)
+                return NotFound();
+            return Ok(user);
+        }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult> GetUser(string filter, int pageIndex = 1, int pageSize = 10)
+        {
+            var pagination = await _userService.GetUserPagging(filter, pageIndex, pageSize);
+            if (pagination.totalRecord == 0)
+                return NotFound();
+            return Ok(pagination);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> PutUser(string id, [FromBody] UserUpdateModel userUM)
+        {
+            if (id != userUM.Id.ToString())
+                return BadRequest();
+            var user = await _userService.FindById(id);
+            if (user == null)
+                return NotFound();
+            var rel = await _userService.UpdateUser(user, userUM);
+            if (rel.Succeeded)
+            {
+                return NoContent();
+            }
+            return BadRequest(rel.Errors);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUser(string id)
+        {
+            var user = await _userService.FindById(id);
+            if (user == null)
+                return NotFound();
+            var userVM = new UserVM()
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                Dob = user.Dob.ToString("dd/MM/yyyy"),
+                PhoneNumber = user.PhoneNumber,
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            };
+            var rel = await _userService.DeleteUser(user);
+            if (rel.Succeeded)
+            {
+                return Ok(userVM);
+            }
+            return BadRequest(rel.Errors);
         }
     }
 }

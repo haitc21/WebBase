@@ -18,5 +18,9 @@ namespace WebBase.Services.Interfaces
         Task<RoleVM> GetRoleById(string id);
 
         Task<IdentityResult> UpdateRole(AppRole role, RoleVM roleVM);
+
+        Task<AppRole> FindById(string id);
+
+        Task<IdentityResult> DeleteRole(AppRole role);
     }
 }
