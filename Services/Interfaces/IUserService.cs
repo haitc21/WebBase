@@ -22,5 +22,7 @@ namespace WebBase.Services.Interfaces
         Task<IdentityResult> UpdateUser(AppUser user, UserUpdateModel userUM);
 
         Task<IdentityResult> DeleteUser(AppUser user);
+
+        Task<List<FunctionVM>> GetMenu(string userId);
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebBase.Data;
 using WebBase.Data.Entities;
 using WebBase.Models.RequestModels;
 using WebBase.Models.ViewModels;
@@ -15,11 +16,18 @@ namespace WebBase.Services.ApiServices
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly ApplicationDbContext _context;
+        private readonly RoleManager<AppRole> _roleManager;
 
-        public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public UserService(UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager,
+            ApplicationDbContext context,
+            RoleManager<AppRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
+            _roleManager = roleManager;
         }
 
         public async Task<IdentityResult> CreateUser(UserCreateModel userCM, string id)
@@ -121,6 +129,32 @@ namespace WebBase.Services.ApiServices
                 LastName = user.LastName
             };
             return userVM;
+        }
+
+        public async Task<List<FunctionVM>> GetMenu(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var roles = await _userManager.GetRolesAsync(user);
+            var query = from f in _context.Functions
+                        join p in _context.Permissions
+                            on f.Id equals p.FunctionId
+                        join r in _roleManager.Roles on p.RoleId equals r.Id
+                        join a in _context.Commands
+                            on p.CommandId equals a.Id
+                        where roles.Contains(r.Name) && a.Id == "VIEW"
+                        select new FunctionVM
+                        {
+                            Id = f.Id,
+                            Name = f.Name,
+                            Url = f.Url,
+                            ParentId = f.ParentId,
+                            SortOrder = f.SortOrder,
+                        };
+            var data = await query.Distinct()
+                .OrderBy(x => x.ParentId)
+                .ThenBy(x => x.SortOrder)
+                .ToListAsync();
+            return data;
         }
 
         #endregion
