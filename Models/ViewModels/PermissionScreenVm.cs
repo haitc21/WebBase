@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace WebBase.Models.ViewModels
+﻿namespace WebBase.Models.ViewModels
 {
     public class PermissionScreenVm
     {

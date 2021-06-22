@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -116,7 +114,7 @@ namespace WebBase.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFunction(string id, [FromBody]FunctionCreateModel request)
+        public async Task<IActionResult> PutFunction(string id, [FromBody] FunctionCreateModel request)
         {
             var function = await _context.Functions.FindAsync(id);
             if (function == null)
