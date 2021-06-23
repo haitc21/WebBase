@@ -24,5 +24,7 @@ namespace WebBase.Services.Interfaces
         Task<IdentityResult> DeleteUser(AppUser user);
 
         Task<List<FunctionVM>> GetMenu(string userId);
+
+        Task<IdentityResult> ChangePassword(AppUser user, UserChangePasswordModel userCPM);
     }
 }

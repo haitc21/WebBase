@@ -95,7 +95,6 @@ namespace WebBase.Services.ApiServices
             user.FirstName = userUM.FirstName;
             user.PhoneNumber = userUM.PhoneNumber;
             user.Dob = DateTime.Parse(userUM.Dob);
-            user.LastModifiedDate = DateTime.Now;
             var result = await _userManager.UpdateAsync(user);
             return result;
         }
@@ -114,22 +113,6 @@ namespace WebBase.Services.ApiServices
             return rel;
         }
 
-        #region
-
-        private static UserVM MapUserToVM(AppUser user)
-        {
-            var userVM = new UserVM()
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
-                Dob = user.Dob.ToString("dd/MM/yyyy"),
-                PhoneNumber = user.PhoneNumber,
-                FirstName = user.FirstName,
-                LastName = user.LastName
-            };
-            return userVM;
-        }
 
         public async Task<List<FunctionVM>> GetMenu(string userId)
         {
@@ -157,6 +140,28 @@ namespace WebBase.Services.ApiServices
             return data;
         }
 
+        public async Task<IdentityResult> ChangePassword(AppUser user, UserChangePasswordModel userCPM)
+        {
+            var result = await _userManager.ChangePasswordAsync(user, userCPM.CurPass, userCPM.NewPass);
+            return result;
+        }
+
+        #region
+
+        private static UserVM MapUserToVM(AppUser user)
+        {
+            var userVM = new UserVM()
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                Dob = user.Dob.ToString("dd/MM/yyyy"),
+                PhoneNumber = user.PhoneNumber,
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            };
+            return userVM;
+        }
         #endregion
     }
 }

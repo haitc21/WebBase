@@ -106,5 +106,17 @@ namespace WebBase.Controllers
             var data = await _userService.GetMenu(userId);
             return Ok(data);
         }
+
+        [HttpPut("{userId}/change-password")]
+        public async Task<IActionResult> PutUserPassword(string userId, [FromBody] UserChangePasswordModel userCPM)
+        {
+            var user = await _userService.FindById(userId);
+            if (user == null)
+                return NotFound();
+            var result = await _userService.ChangePassword(user, userCPM);
+            if (result.Succeeded)
+                return NoContent();
+            return BadRequest();
+        }
     }
 }
