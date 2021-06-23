@@ -3,7 +3,9 @@ using System;
 using System.Threading.Tasks;
 using WebBase.Models.RequestModels;
 using WebBase.Models.ViewModels;
+using WebBase.Services.Authorization;
 using WebBase.Services.Interfaces;
+using static WebBase.Common.Enums;
 
 namespace WebBase.Controllers
 {
@@ -17,6 +19,7 @@ namespace WebBase.Controllers
         }
 
         [HttpPost]
+        [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.CREATE)]
         public async Task<IActionResult> PostUser(UserCreateModel request)
         {
             if (!ModelState.IsValid)
@@ -35,6 +38,7 @@ namespace WebBase.Controllers
 
         // GET: api/<UsersController>
         [HttpGet]
+        [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.VIEW)]
         public async Task<ActionResult> GetUsers()
         {
             var users = await _userService.GetAllUsers();
@@ -44,6 +48,7 @@ namespace WebBase.Controllers
         }
 
         [HttpGet("{id}")]
+        [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.VIEW)]
         public async Task<ActionResult> GetById(string id)
         {
             var user = await _userService.GetUserById(id);
@@ -53,6 +58,7 @@ namespace WebBase.Controllers
         }
 
         [HttpGet("filter")]
+        [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.VIEW)]
         public async Task<ActionResult> GetUser(string filter, int pageIndex = 1, int pageSize = 10)
         {
             var pagination = await _userService.GetUserPagging(filter, pageIndex, pageSize);
@@ -62,6 +68,7 @@ namespace WebBase.Controllers
         }
 
         [HttpPut("{id}")]
+        [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.UPDATE)]
         public async Task<ActionResult> PutUser(string id, [FromBody] UserUpdateModel userUM)
         {
             if (id != userUM.Id.ToString())
@@ -78,6 +85,7 @@ namespace WebBase.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.DELETE)]
         public async Task<ActionResult> DeleteUser(string id)
         {
             var user = await _userService.FindById(id);

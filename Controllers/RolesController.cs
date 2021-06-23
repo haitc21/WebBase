@@ -8,7 +8,9 @@ using WebBase.Data;
 using WebBase.Data.Entities;
 using WebBase.Models.RequestModels;
 using WebBase.Models.ViewModels;
+using WebBase.Services.Authorization;
 using WebBase.Services.Interfaces;
+using static WebBase.Common.Enums;
 
 namespace WebBase.Controllers
 {
@@ -26,6 +28,7 @@ namespace WebBase.Controllers
 
         // URL: POST https://localhost:5000/api/roles
         [HttpPost]
+        [ClaimRequirement(FunctionCode.SYSTEM_ROLE, CommandCode.CREATE)]
         public async Task<ActionResult> PostRole(RolsCreateModel roleCM)
         {
             if (!ModelState.IsValid)
@@ -38,8 +41,8 @@ namespace WebBase.Controllers
                 return BadRequest();
         }
 
-        // URL: GET https://localhost:5000/api/roles/
         [HttpGet]
+        [ClaimRequirement(FunctionCode.SYSTEM_ROLE, CommandCode.VIEW)]
         public async Task<ActionResult> GetRoles()
         {
             var roleVM = await _roleServices.GetAllRoles();
@@ -48,8 +51,8 @@ namespace WebBase.Controllers
             return Ok(roleVM);
         }
 
-        // URL: GET https://localhost:5000/api/roles/?filter={filter}&pageIndex=1&pageSize=10
         [HttpGet("filter")]
+        [ClaimRequirement(FunctionCode.SYSTEM_ROLE, CommandCode.VIEW)]
         public async Task<ActionResult> GetRole(string filter, int pageIndex = 1, int pageSize = 10)
         {
             var pagination = await _roleServices.GetRolePagging(filter, pageIndex, pageSize);
@@ -58,8 +61,8 @@ namespace WebBase.Controllers
             return Ok(pagination);
         }
 
-        // URL: GET https://localhost:5000/api/roles/{id}
         [HttpGet("{id}")]
+        [ClaimRequirement(FunctionCode.SYSTEM_ROLE, CommandCode.VIEW)]
         public async Task<ActionResult> GetById(string id)
         {
             var roleVM = await _roleServices.GetRoleById(id);
@@ -68,8 +71,8 @@ namespace WebBase.Controllers
             return Ok(roleVM);
         }
 
-        // URL: PUT https://localhost:5000/api/roles/{id}
         [HttpPut("{id}")]
+        [ClaimRequirement(FunctionCode.SYSTEM_ROLE, CommandCode.UPDATE)]
         public async Task<ActionResult> PutTole(string id, [FromBody] RoleVM roleVM)
         {
             if (id != roleVM.Id.ToString())
@@ -85,8 +88,8 @@ namespace WebBase.Controllers
             return BadRequest(rel.Errors);
         }
 
-        // URL: DELETE https://localhost:5000/api/roles/{id}
         [HttpDelete("{id}")]
+        [ClaimRequirement(FunctionCode.SYSTEM_ROLE, CommandCode.DELETE)]
         public async Task<ActionResult> DeleteRole(string id)
         {
             var role = await _roleServices.FindById(id);
@@ -107,6 +110,7 @@ namespace WebBase.Controllers
         }
 
         [HttpGet("{roleId}/permissions")]
+        [ClaimRequirement(FunctionCode.SYSTEM_PERMISSION, CommandCode.VIEW)]
         public async Task<IActionResult> GetPermissionByRoleId(string roleId)
         {
             var permissions = from p in _context.Permissions
@@ -124,6 +128,7 @@ namespace WebBase.Controllers
         }
 
         [HttpPut("{roleId}/permissions")]
+        [ClaimRequirement(FunctionCode.SYSTEM_PERMISSION, CommandCode.UPDATE)]
         public async Task<IActionResult> PutPermissionByRoleId(string roleId, [FromBody] PẻmissionUpdateModel request)
         {
             //create new permission list from user changed

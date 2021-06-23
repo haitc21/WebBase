@@ -6,6 +6,8 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using WebBase.Models.ViewModels;
+using WebBase.Services.Authorization;
+using static WebBase.Common.Enums;
 
 namespace WebBase.Controllers
 {
@@ -23,6 +25,7 @@ namespace WebBase.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [ClaimRequirement(FunctionCode.SYSTEM_PERMISSION, CommandCode.VIEW)]
         public async Task<IActionResult> GetCommandViews()
         {
             using (SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))

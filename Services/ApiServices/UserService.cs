@@ -113,7 +113,6 @@ namespace WebBase.Services.ApiServices
             return rel;
         }
 
-
         public async Task<List<FunctionVM>> GetMenu(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -162,6 +161,7 @@ namespace WebBase.Services.ApiServices
             };
             return userVM;
         }
+
         #endregion
     }
 }
