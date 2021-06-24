@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebBase.Data;
 using WebBase.Data.Entities;
+using WebBase.Helpers;
 using WebBase.Helpers.Authorization;
 using WebBase.Models.RequestModels;
 using WebBase.Models.ViewModels;
@@ -23,11 +24,12 @@ namespace WebBase.Controllers
 
         [HttpPost]
         [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.CREATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PostFunction([FromBody] FunctionCreateModel request)
         {
             var dbFunction = await _context.Functions.FindAsync(request.Id);
             if (dbFunction != null)
-                return BadRequest($"Function with id {request.Id} is existed.");
+                return BadRequest(new ApiBadRequestResponse($"Function with id {request.Id} is existed."));
 
             var function = new Function()
             {
@@ -46,7 +48,7 @@ namespace WebBase.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse("Create function is failed"));
             }
         }
 
@@ -121,11 +123,12 @@ namespace WebBase.Controllers
 
         [HttpPut("{id}")]
         [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.UPDATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PutFunction(string id, [FromBody] FunctionCreateModel request)
         {
             var function = await _context.Functions.FindAsync(id);
             if (function == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"Cannot found function with id: {id}"));
 
             function.Name = request.Name;
             function.ParentId = request.ParentId;
@@ -148,7 +151,7 @@ namespace WebBase.Controllers
         {
             var function = await _context.Functions.FindAsync(id);
             if (function == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"Cannot found function with id: {id}"));
 
             _context.Functions.Remove(function);
             var result = await _context.SaveChangesAsync();
@@ -223,11 +226,12 @@ namespace WebBase.Controllers
 
         [HttpPost("{functionId}/commands")]
         [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.CREATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PostCommandToFunction(string functionId, [FromBody] CommandInFunctionCreateModel request)
         {
             var commandInFunction = await _context.CommandInFunctions.FindAsync(request.CommandId, request.FunctionId);
             if (commandInFunction != null)
-                return BadRequest($"This command has been added to function");
+                return BadRequest(new ApiBadRequestResponse("This command has been added to function"));
 
             var entity = new CommandInFunction()
             {
@@ -253,7 +257,7 @@ namespace WebBase.Controllers
         {
             var commandInFunction = await _context.CommandInFunctions.FindAsync(functionId, commandId);
             if (commandInFunction == null)
-                return BadRequest($"This command is not existed in function");
+                return BadRequest(new ApiBadRequestResponse($"This command is not existed in function"));
 
             var entity = new CommandInFunction()
             {
