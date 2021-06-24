@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebBase.Data;
 using WebBase.Data.Entities;
+using WebBase.Helpers;
 using WebBase.Helpers.Authorization;
 using WebBase.Models.RequestModels;
 using WebBase.Models.ViewModels;
@@ -29,16 +30,17 @@ namespace WebBase.Controllers
         // URL: POST https://localhost:5000/api/roles
         [HttpPost]
         [ClaimRequirement(FunctionCode.SYSTEM_ROLE, CommandCode.CREATE)]
+        [ApiValidationFilter]
         public async Task<ActionResult> PostRole(RolsCreateModel roleCM)
         {
             if (!ModelState.IsValid)
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse("Modelstate invalid!"));
             var id = Guid.NewGuid().ToString();
             var result = await _roleServices.CreateRole(roleCM, id);
             if (result.Succeeded)
                 return CreatedAtAction(nameof(GetById), new { id = id }, roleCM);
             else
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse(result));
         }
 
         [HttpGet]
@@ -47,7 +49,7 @@ namespace WebBase.Controllers
         {
             var roleVM = await _roleServices.GetAllRoles();
             if (roleVM == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse("Can't found any role"));
             return Ok(roleVM);
         }
 
@@ -57,7 +59,7 @@ namespace WebBase.Controllers
         {
             var pagination = await _roleServices.GetRolePagging(filter, pageIndex, pageSize);
             if (pagination.totalRecord == 0)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"Can't found role wirh filter: {filter}"));
             return Ok(pagination);
         }
 
@@ -67,25 +69,26 @@ namespace WebBase.Controllers
         {
             var roleVM = await _roleServices.GetRoleById(id);
             if (roleVM == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"Role id {id} not exsited!"));
             return Ok(roleVM);
         }
 
         [HttpPut("{id}")]
         [ClaimRequirement(FunctionCode.SYSTEM_ROLE, CommandCode.UPDATE)]
+        [ApiValidationFilter]
         public async Task<ActionResult> PutTole(string id, [FromBody] RoleVM roleVM)
         {
             if (id != roleVM.Id.ToString())
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse("Role id from url diffirent role id from body!"));
             var role = await _roleServices.FindById(id);
             if (role == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"Role id {id} not exsited!"));
             var rel = await _roleServices.UpdateRole(role, roleVM);
             if (rel.Succeeded)
             {
                 return NoContent();
             }
-            return BadRequest(rel.Errors);
+            return BadRequest(new ApiBadRequestResponse(rel));
         }
 
         [HttpDelete("{id}")]
@@ -94,7 +97,7 @@ namespace WebBase.Controllers
         {
             var role = await _roleServices.FindById(id);
             if (role == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"Role id {id} not exsited!"));
             var roleVM = new RoleVM()
             {
                 Id = role.Id,
@@ -106,7 +109,7 @@ namespace WebBase.Controllers
             {
                 return Ok(roleVM);
             }
-            return BadRequest(rel.Errors);
+            eturn BadRequest(new ApiBadRequestResponse(rel));
         }
 
         [HttpGet("{roleId}/permissions")]
@@ -129,6 +132,7 @@ namespace WebBase.Controllers
 
         [HttpPut("{roleId}/permissions")]
         [ClaimRequirement(FunctionCode.SYSTEM_PERMISSION, CommandCode.UPDATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PutPermissionByRoleId(string roleId, [FromBody] PẻmissionUpdateModel request)
         {
             //create new permission list from user changed
@@ -146,7 +150,7 @@ namespace WebBase.Controllers
             {
                 return NoContent();
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse("Update permission failed!"));
         }
     }
 }

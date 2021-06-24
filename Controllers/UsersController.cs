@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using WebBase.Helpers;
 using WebBase.Helpers.Authorization;
 using WebBase.Models.RequestModels;
 using WebBase.Models.ViewModels;
@@ -20,10 +21,11 @@ namespace WebBase.Controllers
 
         [HttpPost]
         [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.CREATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PostUser(UserCreateModel request)
         {
             if (!ModelState.IsValid)
-                return BadRequest();
+                return BadRequest(new );
             string id = Guid.NewGuid().ToString();
             var result = await _userService.CreateUser(request, id);
             if (result.Succeeded)
@@ -32,7 +34,7 @@ namespace WebBase.Controllers
             }
             else
             {
-                return BadRequest(result.Errors);
+                return BadRequest(new ApiBadRequestResponse(result));
             }
         }
 
@@ -53,7 +55,7 @@ namespace WebBase.Controllers
         {
             var user = await _userService.GetUserById(id);
             if (user == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"User id {id} not exsited!"));
             return Ok(user);
         }
 
@@ -63,25 +65,26 @@ namespace WebBase.Controllers
         {
             var pagination = await _userService.GetUserPagging(filter, pageIndex, pageSize);
             if (pagination.totalRecord == 0)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"Can't found user with filter: {filter}!"));
             return Ok(pagination);
         }
 
         [HttpPut("{id}")]
         [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.UPDATE)]
+        [ApiValidationFilter]
         public async Task<ActionResult> PutUser(string id, [FromBody] UserUpdateModel userUM)
         {
             if (id != userUM.Id.ToString())
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse("User id from link can't diffirent user id from body request!"));
             var user = await _userService.FindById(id);
             if (user == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"User id {id} not exsited!"));
             var rel = await _userService.UpdateUser(user, userUM);
             if (rel.Succeeded)
             {
                 return NoContent();
             }
-            return BadRequest(rel.Errors);
+            return BadRequest(new ApiBadRequestResponse(rel));
         }
 
         [HttpDelete("{id}")]
@@ -90,7 +93,7 @@ namespace WebBase.Controllers
         {
             var user = await _userService.FindById(id);
             if (user == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"User id {id} not exsited!"));
             var userVM = new UserVM()
             {
                 UserName = user.UserName,
@@ -105,7 +108,7 @@ namespace WebBase.Controllers
             {
                 return Ok(userVM);
             }
-            return BadRequest(rel.Errors);
+            return BadRequest(new ApiBadRequestResponse(rel));
         }
 
         [HttpGet("{userId}/menu")]
@@ -116,15 +119,16 @@ namespace WebBase.Controllers
         }
 
         [HttpPut("{userId}/change-password")]
+        [ApiValidationFilter]
         public async Task<IActionResult> PutUserPassword(string userId, [FromBody] UserChangePasswordModel userCPM)
         {
             var user = await _userService.FindById(userId);
             if (user == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"User id {id} not exsited!"));
             var result = await _userService.ChangePassword(user, userCPM);
             if (result.Succeeded)
                 return NoContent();
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse(result));
         }
     }
 }
