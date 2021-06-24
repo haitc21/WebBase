@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using WebBase.Helpers.Authorization;
 using WebBase.Models.RequestModels;
 using WebBase.Models.ViewModels;
-using WebBase.Services.Authorization;
 using WebBase.Services.Interfaces;
 using static WebBase.Common.Enums;
 

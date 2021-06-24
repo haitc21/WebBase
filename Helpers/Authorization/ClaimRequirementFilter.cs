@@ -6,7 +6,7 @@ using System.Linq;
 using WebBase.Common;
 using static WebBase.Common.Enums;
 
-namespace WebBase.Services.Authorization
+namespace WebBase.Helpers.Authorization
 {
     public class ClaimRequirementFilter : IAuthorizationFilter
     {

@@ -15,6 +15,9 @@ using WebBase.Data.Entities;
 
 namespace WebBase.Services.Extensions
 {
+    /// <summary>
+    /// Khi dang nhap se tu trigger den service nay de them cac claim(chua danh sach cac quyen cua user)
+    /// </summary>
     public class IdentityProfileService : IProfileService
     {
         private readonly IUserClaimsPrincipalFactory<AppUser> _claimsFactory;

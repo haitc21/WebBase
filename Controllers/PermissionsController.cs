@@ -5,8 +5,8 @@ using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using WebBase.Helpers.Authorization;
 using WebBase.Models.ViewModels;
-using WebBase.Services.Authorization;
 using static WebBase.Common.Enums;
 
 namespace WebBase.Controllers

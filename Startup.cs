@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using WebBase.Data;
 using WebBase.Data.Entities;
+using WebBase.Helpers;
 using WebBase.Models.Validations;
 using WebBase.Services.ApiServices;
 using WebBase.Services.Extensions;
@@ -71,7 +73,14 @@ namespace WebBase
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryClients(Config.Clients)
                 .AddInMemoryApiResources(Config.Apis)
-                .AddAspNetIdentity<AppUser>();
+                .AddAspNetIdentity<AppUser>()
+                .AddProfileService<IdentityProfileService>();
+
+            // loi fluent validation tra ve cho model state
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
 
             // not recommended for production - you need to store your key material somewhere secure
             builder.AddDeveloperSigningCredential();
@@ -141,6 +150,8 @@ namespace WebBase
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseErrorWrapping(); // cái này được định nghĩa trong Helper
 
             app.UseStaticFiles();
 
