@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using WebBase.Helpers;
@@ -13,10 +14,13 @@ namespace WebBase.Controllers
     public class UsersController : BaseController
     {
         private readonly IUserService _userService;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService,
+            ILogger<UsersController> logger)
         {
             _userService = userService;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -24,16 +28,20 @@ namespace WebBase.Controllers
         [ApiValidationFilter]
         public async Task<IActionResult> PostUser(UserCreateModel request)
         {
+            _logger.LogInformation("Begin PostUser API");
+
             if (!ModelState.IsValid)
-                return BadRequest(new );
+                return BadRequest(new ApiBadRequestResponse("Model invalid!"));
             string id = Guid.NewGuid().ToString();
             var result = await _userService.CreateUser(request, id);
             if (result.Succeeded)
             {
+                _logger.LogInformation("End PostUser API - Success");
                 return CreatedAtAction(nameof(GetById), new { id = id }, request);
             }
             else
             {
+                _logger.LogInformation("End PostUser API - Failed");
                 return BadRequest(new ApiBadRequestResponse(result));
             }
         }
@@ -124,7 +132,7 @@ namespace WebBase.Controllers
         {
             var user = await _userService.FindById(userId);
             if (user == null)
-                return NotFound(new ApiNotFoundResponse($"User id {id} not exsited!"));
+                return NotFound(new ApiNotFoundResponse($"User id {userId} not exsited!"));
             var result = await _userService.ChangePassword(user, userCPM);
             if (result.Succeeded)
                 return NoContent();

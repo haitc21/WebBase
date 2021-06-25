@@ -109,7 +109,7 @@ namespace WebBase.Controllers
             {
                 return Ok(roleVM);
             }
-            eturn BadRequest(new ApiBadRequestResponse(rel));
+            return BadRequest(new ApiBadRequestResponse(rel));
         }
 
         [HttpGet("{roleId}/permissions")]
