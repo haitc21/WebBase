@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="admin-app\**" />
+    <Content Remove="admin-app\**" />
+    <EmbeddedResource Remove="admin-app\**" />
+    <None Remove="admin-app\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.90" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.2.3" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.0.0" />
