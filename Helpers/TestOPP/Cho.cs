@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace WebBase.Helpers.TestOPP
 {
-    public class Cho : DongVat
+    public class Cho : DongVat, IMauSac
     {
         public Cho()
         {
@@ -18,11 +18,24 @@ namespace WebBase.Helpers.TestOPP
             this.Nang = w;
         }
 
+        public string Colore { get; set; }
+
         public override void Keu()
         {
             Console.WriteLine("Cho keu!");
             Console.WriteLine("Cao: " + this.Cao);
             Console.WriteLine("Nang: " + this.Nang);
+        }
+
+        public void NoMauGi()
+        {
+            Console.WriteLine("Con cho mau: " + this.Colore);
+        }
+
+        public string SetMau(string color)
+        {
+            this.Colore = color;
+            return color;
         }
     }
 }
