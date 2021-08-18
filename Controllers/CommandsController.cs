@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using WebBase.Data;
-using WebBase.Helpers.TestOPP;
 using WebBase.Models.ViewModels;
 
 namespace WebBase.Controllers
@@ -18,26 +17,8 @@ namespace WebBase.Controllers
         }
 
         [HttpGet()]
-        public async Task<IActionResult> GetCommants()
+        public async Task<IActionResult> GetCommands()
         {
-            //DongVat cho1 = new Cho();
-            //int cho1Cao = cho1.Cao;
-            //int cho1Nang = cho1.Nang;
-            //cho1.Keu();
-
-            //Cho cho2 = new Cho(15,20);
-            //int cho2Cao = cho2.Cao;
-            //int cho2Nang = cho2.Nang;
-            //cho2.Keu();
-
-            Cho cho3 = new Cho(15, 20);
-            cho3.Keu();
-            cho3.SetMau("Vang");
-
-            int cho3Cao = cho3.Cao;
-            int cho3Nang = cho3.Nang;
-            cho3.NoMauGi();
-
             var commands = _context.Commands;
 
             var commandVms = await commands.Select(u => new CommandVM()

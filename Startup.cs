@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using WebBase.Data;
 using WebBase.Data.Entities;
 using WebBase.Helpers;
+using WebBase.Models.RequestModels;
 using WebBase.Models.Validations;
 using WebBase.Services.ApiServices;
 using WebBase.Services.Extensions;
@@ -36,13 +37,14 @@ namespace WebBase
             //var secret = new IdentityServer4.Models.Secret("secret".Sha256());
             //1. Setup entity framework
             // Configuration.GetConnectionString lay trong appsetting.json
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContextPool<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(connectionString));
 
-            //2. Setup idetntity
+            //2. Setup idetntity`
             services.AddIdentity<AppUser, AppRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders(); // co cai nay no moi dung duoc GenerateEmailConfirmationTokenAsync
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -52,7 +54,7 @@ namespace WebBase
                 options.Lockout.AllowedForNewUsers = true;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.SignIn.RequireConfirmedAccount = false;
-                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedEmail = true;
                 options.Password.RequiredLength = 8;
                 options.Password.RequireDigit = true;
                 options.Password.RequireUppercase = true;
@@ -142,6 +144,10 @@ namespace WebBase
             services.AddTransient<IEmailSender, EmailSenderService>();
             services.AddTransient<IRoleServices, RoleServices>();
             services.AddTransient<IUserService, UserService>();
+            // Options
+            services.AddOptions();                                        // Kích hoạt Options
+            var mailsettings = Configuration.GetSection("MailSettings");  // đọc config
+            services.Configure<MailSettings>(mailsettings);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

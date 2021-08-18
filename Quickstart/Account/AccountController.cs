@@ -11,11 +11,16 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using WebBase.Data.Entities;
+using WebBase.Quickstart.Account;
 
 namespace IdentityServerHost.Quickstart.UI
 {
@@ -29,6 +34,8 @@ namespace IdentityServerHost.Quickstart.UI
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
+        private readonly ILogger<AccountController> _logger;
+        private readonly IEmailSender _emailSender;
 
         public AccountController(
             UserManager<AppUser> userManager,
@@ -36,7 +43,9 @@ namespace IdentityServerHost.Quickstart.UI
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
-            IEventService events)
+            IEventService events,
+            ILogger<AccountController> logger,
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -44,7 +53,17 @@ namespace IdentityServerHost.Quickstart.UI
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
+            _logger = logger;
+            _emailSender = emailSender;
         }
+
+        [HttpGet]
+        public IActionResult test()
+        {
+            return View();
+        }
+
+        #region login
 
         /// <summary>
         /// Entry point into the login workflow
@@ -147,6 +166,10 @@ namespace IdentityServerHost.Quickstart.UI
             return View(vm);
         }
 
+        #endregion login
+
+        #region Logout
+
         /// <summary>
         /// Show logout page
         /// </summary>
@@ -200,11 +223,163 @@ namespace IdentityServerHost.Quickstart.UI
             return View("LoggedOut", vm);
         }
 
+        #endregion Logout
+
+        #region AccessDenied
+
         [HttpGet]
         public IActionResult AccessDenied()
         {
             return View();
         }
+
+        #endregion AccessDenied
+
+        #region RegisterConfirmation
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterConfirmation(string email, string returnUrl = null)
+        {
+            if (string.IsNullOrEmpty(returnUrl))
+                returnUrl = "/";
+            if (email == null)
+                return this.LoadingPage("Redirect", returnUrl);
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return NotFound($"Không có user với email: '{email}'.");
+
+            if (user.EmailConfirmed)
+            {
+                // Tài khoản đã xác thực email
+                return this.LoadingPage("Redirect", returnUrl);
+            }
+            var model = new RegisterConfirmationModel();
+
+            if (returnUrl != null)
+                model.UrlContinue = Url.Action("RegisterConfirmation", "Account", new { email = email, returnUrl = returnUrl });
+            else
+                model.UrlContinue = Url.Action("ConfirmEmRegisterConfirmationail", "Account", new { email = email });
+            model.Email = email;
+
+            return View(model);
+        }
+
+        #endregion RegisterConfirmation
+
+        #region ConfirmEmail
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code, string returnUrl)
+        {
+            if (string.IsNullOrEmpty(returnUrl))
+                returnUrl = "/";
+            if (userId == null || code == null)
+                return this.LoadingPage("Redirect", returnUrl);
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound($"Không tồn tại User - '{userId}'.");
+
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            // Xác thực email
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            if (result.Succeeded)
+            {
+                // Đăng nhập luôn nếu xác thực email thành công
+                await _signInManager.SignInAsync(user, false);
+                return this.LoadingPage("Redirect", returnUrl);
+            }
+            var model = new ConfirmEmailModel();
+            model.StatusMessage = "Lỗi xác nhận email";
+            return View(model);
+        }
+
+        #endregion ConfirmEmail
+
+        #region Register
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register(string returnUrl = null)
+        {
+            ViewBag.ReturnUrl = returnUrl ?? "/";
+            ViewBag.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register(RegisterModel model, string returnUrl = null)
+        {
+            if (string.IsNullOrEmpty(returnUrl))
+                returnUrl = Url.Content("~/");
+            var ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            if (ModelState.IsValid)
+            {
+                // Tạo AppUser sau đó tạo User mới (cập nhật vào db)
+                var user = new AppUser()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Email = model.Email,
+                    Dob = model.Dob,
+                    UserName = model.UserName,
+                    LastName = model.LastName,
+                    FirstName = model.FirstName,
+                    PhoneNumber = model.PhoneNumber,
+                    CreateDate = DateTime.Now,
+                };
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("Vừa tạo mới tài khoản thành công.");
+
+                    // phát sinh token theo thông tin user để xác nhận email
+                    // mỗi user dựa vào thông tin sẽ có một mã riêng, mã này nhúng vào link
+                    // trong email gửi đi để người dùng xác nhận
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+                    // callbackUrl = /Account/ConfirmEmail?userId=useridxx&code=codexxxx
+                    // Link trong email người dùng bấm vào, nó sẽ gọi Page: /Acount/ConfirmEmail để xác nhận
+                    var callbackUrl = Url.Action(
+                       "ConfirmEmail",
+                        "Account",
+                        new { userId = user.Id, code = code, returnUrl = returnUrl },
+                        protocol: Request.Scheme);
+
+                    // Gửi email
+                    await _emailSender.SendEmailAsync(model.Email, "Xác nhận địa chỉ email",
+                        $"Hãy xác nhận địa chỉ email bằng cách <a href='{callbackUrl}'>Bấm vào đây</a>.");
+
+                    if (_userManager.Options.SignIn.RequireConfirmedEmail)
+                    {
+                        // Nếu cấu hình phải xác thực email mới được đăng nhập thì chuyển hướng đến trang
+                        // RegisterConfirmation - chỉ để hiện thông báo cho biết người dùng cần mở email xác nhận
+                        return RedirectToAction("RegisterConfirmation","Account", new { email = model.Email, returnUrl = returnUrl });
+                    }
+                    else
+                    {
+                        // Không cần xác thực - đăng nhập luôn
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return LocalRedirect(returnUrl);
+                    }
+                }
+                // Có lỗi, đưa các lỗi thêm user vào ModelState để hiện thị ở html heleper: asp-validation-summary
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+            return View(model);
+        }
+
+        #endregion Register
+
+        #region helper APIs for the AccountController
 
         /*****************************************/
         /* helper APIs for the AccountController */
@@ -337,5 +512,7 @@ namespace IdentityServerHost.Quickstart.UI
 
             return vm;
         }
+
+        #endregion helper APIs for the AccountController
     }
 }
