@@ -57,12 +57,6 @@ namespace IdentityServerHost.Quickstart.UI
             _emailSender = emailSender;
         }
 
-        [HttpGet]
-        public IActionResult test()
-        {
-            return View();
-        }
-
         #region login
 
         /// <summary>
@@ -122,10 +116,27 @@ namespace IdentityServerHost.Quickstart.UI
 
             if (ModelState.IsValid)
             {
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (_userManager.Options.SignIn.RequireConfirmedEmail) // kiem tra xem co cau hinh trong startup bat buoc phai xac thuc email k
+                {
+                    // chua xac thuc mail thi gui mail
+                    if (!user.EmailConfirmed)
+                    {
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        var callbackUrl = Url.Action(
+                           "ConfirmEmail",
+                            "Account",
+                            new { userId = user.Id, code = code, returnUrl = model.ReturnUrl },
+                            protocol: Request.Scheme);
+                        await _emailSender.SendEmailAsync(user.Email, "Xác nhận địa chỉ email",
+                            $"Hãy xác nhận địa chỉ email bằng cách <a href='{callbackUrl}'>Bấm vào đây</a>.");
+                        return RedirectToAction("RegisterConfirmation", "Account", new { email = user.Email, returnUrl = model.ReturnUrl });
+                    }
+                }
                 var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
-                    var user = await _userManager.FindByNameAsync(model.Username);
                     await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
 
                     if (context != null)
@@ -359,7 +370,7 @@ namespace IdentityServerHost.Quickstart.UI
                     {
                         // Nếu cấu hình phải xác thực email mới được đăng nhập thì chuyển hướng đến trang
                         // RegisterConfirmation - chỉ để hiện thông báo cho biết người dùng cần mở email xác nhận
-                        return RedirectToAction("RegisterConfirmation","Account", new { email = model.Email, returnUrl = returnUrl });
+                        return RedirectToAction("RegisterConfirmation", "Account", new { email = model.Email, returnUrl = returnUrl });
                     }
                     else
                     {
