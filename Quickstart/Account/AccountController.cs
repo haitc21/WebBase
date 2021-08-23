@@ -117,59 +117,70 @@ namespace IdentityServerHost.Quickstart.UI
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByNameAsync(model.Username);
-                if (_userManager.Options.SignIn.RequireConfirmedEmail) // kiem tra xem co cau hinh trong startup bat buoc phai xac thuc email k
+                if (user != null)
                 {
-                    // chua xac thuc mail thi gui mail
-                    if (!user.EmailConfirmed)
+                    if (_userManager.Options.SignIn.RequireConfirmedEmail) // kiem tra xem co cau hinh trong startup bat buoc phai xac thuc email k
                     {
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl = Url.Action(
-                           "ConfirmEmail",
-                            "Account",
-                            new { userId = user.Id, code = code, returnUrl = model.ReturnUrl },
-                            protocol: Request.Scheme);
-                        await _emailSender.SendEmailAsync(user.Email, "Xác nhận địa chỉ email",
-                            $"Hãy xác nhận địa chỉ email bằng cách <a href='{callbackUrl}'>Bấm vào đây</a>.");
-                        return RedirectToAction("RegisterConfirmation", "Account", new { email = user.Email, returnUrl = model.ReturnUrl });
-                    }
-                }
-                var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
-                if (result.Succeeded)
-                {
-                    await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
-
-                    if (context != null)
-                    {
-                        if (context.IsNativeClient())
+                        // chua xac thuc mail thi gui mail
+                        if (!user.EmailConfirmed)
                         {
-                            // The client is native, so this change in how to
-                            // return the response is for better UX for the end user.
-                            return this.LoadingPage("Redirect", model.ReturnUrl);
+                            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                            var callbackUrl = Url.Action(
+                               "ConfirmEmail",
+                                "Account",
+                                new { userId = user.Id, code = code, returnUrl = model.ReturnUrl },
+                                protocol: Request.Scheme);
+                            await _emailSender.SendEmailAsync(user.Email, "Xác nhận địa chỉ email",
+                                $"Hãy xác nhận địa chỉ email bằng cách <a href='{callbackUrl}'>Bấm vào đây</a>.");
+                            return RedirectToAction("RegisterConfirmation", "Account", new { email = user.Email, returnUrl = model.ReturnUrl });
+                        }
+                    }
+                    var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
+                    if (result.Succeeded)
+                    {
+                        await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
+
+                        if (context != null)
+                        {
+                            if (context.IsNativeClient())
+                            {
+                                // The client is native, so this change in how to
+                                // return the response is for better UX for the end user.
+                                return this.LoadingPage("Redirect", model.ReturnUrl);
+                            }
+
+                            // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                            return Redirect(model.ReturnUrl);
                         }
 
-                        // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                        return Redirect(model.ReturnUrl);
+                        // request for a local page
+                        if (Url.IsLocalUrl(model.ReturnUrl))
+                        {
+                            return Redirect(model.ReturnUrl);
+                        }
+                        else if (string.IsNullOrEmpty(model.ReturnUrl))
+                        {
+                            return Redirect("~/");
+                        }
+                        else
+                        {
+                            // user might have clicked on a malicious link - should be logged
+                            throw new Exception("invalid return URL");
+                        }
                     }
-
-                    // request for a local page
-                    if (Url.IsLocalUrl(model.ReturnUrl))
+                    else if (result.IsLockedOut)
                     {
-                        return Redirect(model.ReturnUrl);
-                    }
-                    else if (string.IsNullOrEmpty(model.ReturnUrl))
-                    {
-                        return Redirect("~/");
+                        _logger.LogWarning("Tài khoản bí tạm khóa.");
+                        ModelState.AddModelError(string.Empty, AccountOptions.LockoutMessage);
                     }
                     else
                     {
-                        // user might have clicked on a malicious link - should be logged
-                        throw new Exception("invalid return URL");
+                        await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId));
+                        ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
+
                     }
                 }
-
-                await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId));
-                ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
             }
 
             // something went wrong, show form with error
@@ -311,7 +322,6 @@ namespace IdentityServerHost.Quickstart.UI
         #endregion ConfirmEmail
 
         #region Register
-
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Register(string returnUrl = null)
@@ -389,6 +399,122 @@ namespace IdentityServerHost.Quickstart.UI
         }
 
         #endregion Register
+
+        #region Forgot Password
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(string returnUrl = null)
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            var model = new ForgotPasswordModel();
+            model.ReturnUrl = returnUrl;
+            return View(model);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Tìm user theo email gửi đến
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                {
+                    ModelState.AddModelError(string.Empty, AccountOptions.InvalidEmail);
+                    return View(model);
+                }
+
+                // Phát sinh Token để reset password
+                // Token sẽ được kèm vào link trong email,
+                // link dẫn đến trang /Account/ResetPassword để kiểm tra và đặt lại mật khẩu
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+                var callbackUrl = Url.Action(
+                      "ResetPassword",
+                       "Account",
+                       new { userName = user.UserName,email = user.Email , code = code, returnUrl = model.ReturnUrl },
+                       protocol: Request.Scheme);
+
+                // Gửi email
+                await _emailSender.SendEmailAsync(
+                    model.Email,
+                    "Đặt lại mật khẩu",
+                    $"Để đặt lại mật khẩu hãy <a href='{callbackUrl}'>bấm vào đây</a>.");
+
+                // Chuyển đến trang thông báo đã gửi mail để reset password
+                return RedirectToAction("ResetPasswordConfirmation", "Account", new { returnUrl = model.ReturnUrl });
+            }
+
+            return View(model);
+        }
+        #endregion
+
+        #region ResetPassword
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(string userName,string email ,string code,string returnUrl = null)
+        {
+            if (code == null)
+            {
+                return BadRequest("Mã token không có.");
+            }
+            else
+            {
+                var model = new ResetPasswordModel
+                {
+                    // Giải mã lại code từ code trong url (do mã này khi gửi mail
+                    // đã thực hiện Encode bằng WebEncoders.Base64UrlEncode)
+                    Code = code,
+                    ReturnUrl = returnUrl,
+                    UserName = userName,
+                    Email = email
+                };
+                return View(model);
+            }
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            // Tìm User theo email
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, AccountOptions.InvalidEmail);
+                return View(model);
+            }
+            // Đặt lại passowrd chu user - có kiểm tra mã token khi đổi
+            var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Code));
+            var result = await _userManager.ResetPasswordAsync(user, code, model.Password);
+
+            if (result.Succeeded)
+            {
+                // Chuyển đến trang thông báo đã reset thành công
+                return RedirectToAction("ResetPasswordConfirmation", "Account", new { returnUrl = model.ReturnUrl });
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return View(model);
+        }
+        #endregion
+
+        #region ResetPasswordConfirmation
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPasswordConfirmation(string returnUrl)
+        {
+            ViewBag.ReturnUrl = returnUrl ?? "/";
+            return View();
+        }
+        #endregion
 
         #region helper APIs for the AccountController
 

@@ -49,12 +49,12 @@ namespace WebBase
             services.Configure<IdentityOptions>(options =>
             {
                 // Default Lockout settings.
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // khoa trong 5 phut
+                options.Lockout.MaxFailedAccessAttempts = 5;  // dang nhap sai 5 lan no se khoa, moi lan sai no cap nhap vao truong AccessFailedCount trong User
                 options.Lockout.AllowedForNewUsers = true;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.SignIn.RequireConfirmedAccount = false;
-                options.SignIn.RequireConfirmedEmail = true;
+                options.SignIn.RequireConfirmedEmail = true; // bat buoc xac nhan Email moi dang nhap duoc, trong truong EmailConfirmed bang User
                 options.Password.RequiredLength = 8;
                 options.Password.RequireDigit = true;
                 options.Password.RequireUppercase = true;
