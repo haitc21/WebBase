@@ -69,6 +69,22 @@ namespace WebBase.Data
                     var user = await _userManager.FindByNameAsync("admin");
                     await _userManager.AddToRoleAsync(user, AdminRoleName);
                 }
+                var result = await _userManager.CreateAsync(new AppUser
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = "member",
+                    FirstName = "Thành viên",
+                    LastName = "tranhai",
+                    Email = "tranhai21121995@gmail.com",
+                    LockoutEnabled = false,
+                    Status = (int)Enums.Status.Activied,
+                    Dob = DateTime.Parse("1995/12/21")
+                }, "Member@123");
+                if (result2.Succeeded)
+                {
+                    var user2 = await _userManager.FindByNameAsync("member");
+                    await _userManager.AddToRoleAsync(user2, UserRoleName);
+                }
             }
 
             #endregion Người dùng
@@ -80,10 +96,6 @@ namespace WebBase.Data
                 _context.Functions.AddRange(new List<Function>
                 {
                     new Function {Id = "DASHBOARD", Name = "DashBoard", ParentId = null, SortOrder = 1,Url = "/dashboard",Icon="fa-dashboard" },
-
-                    new Function {Id = "STATISTIC",Name = "Thống kê", ParentId = null, Url = "/statistics",Icon="fa-bar-chart-o" },
-
-                    new Function {Id = "STATISTIC_MONTHLY_NEWMEMBER",Name = "Đăng ký từng tháng",ParentId = "STATISTIC",SortOrder = 1,Url = "/statistics/monthly-registers",Icon = "fa-wrench"},
 
                     new Function {Id = "SYSTEM", Name = "Hệ thống", ParentId = null, Url = "/systems",Icon="fa-th-list" },
 
