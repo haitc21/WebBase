@@ -1,34 +1,28 @@
 {
     "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "cli": {
+      "analytics": "df1ac45e-e59c-4ca3-a54e-c803b7f57f49"
+    },
     "version": 1,
     "newProjectRoot": "projects",
     "projects": {
-        "sb-admin-angular": {
-            "projectType": "application",
-            "schematics": {
-                "@schematics/angular:component": {
-                    "style": "scss"
-                }
-            },
+        "test-ng7": {
             "root": "",
             "sourceRoot": "src",
-            "prefix": "sb",
+            "projectType": "application",
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "outputPath": "dist/sb-admin-angular",
+                        "outputPath": "dist",
                         "index": "src/index.html",
                         "main": "src/main.ts",
+                        "tsConfig": "src/tsconfig.app.json",
                         "polyfills": "src/polyfills.ts",
-                        "tsConfig": "tsconfig.app.json",
-                        "aot": false,
-                        "assets": ["src/favicon.png", "src/assets"],
-                        "styles": ["src/styles/styles.scss"],
-                        "stylePreprocessorOptions": {
-                            "includePaths": ["src", "./node_modules"]
-                        },
-                        "scripts": []
+                        "assets": ["src/assets", "src/favicon.ico"],
+                        "styles": ["node_modules/font-awesome/css/font-awesome.css", "src/styles/app.scss"],
+                        "scripts": ["node_modules/chart.js/dist/Chart.js"],
+                        "allowedCommonJsDependencies": ["chart.js"]
                     },
                     "configurations": {
                         "production": {
@@ -51,11 +45,6 @@
                                     "type": "initial",
                                     "maximumWarning": "2mb",
                                     "maximumError": "5mb"
-                                },
-                                {
-                                    "type": "anyComponentStyle",
-                                    "maximumWarning": "6kb",
-                                    "maximumError": "10kb"
                                 }
                             ]
                         }
@@ -64,18 +53,18 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "sb-admin-angular:build"
+                        "browserTarget": "test-ng7:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "sb-admin-angular:build:production"
+                            "browserTarget": "test-ng7:build:production"
                         }
                     }
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "sb-admin-angular:build"
+                        "browserTarget": "test-ng7:build"
                     }
                 },
                 "test": {
@@ -83,41 +72,57 @@
                     "options": {
                         "main": "src/test.ts",
                         "polyfills": "src/polyfills.ts",
-                        "tsConfig": "tsconfig.spec.json",
-                        "karmaConfig": "karma.conf.js",
-                        "assets": ["src/favicon.png", "src/assets"],
-                        "styles": ["src/styles/styles.scss"],
-                        "stylePreprocessorOptions": {
-                            "includePaths": ["src", "./node_modules"]
-                        },
-                        "scripts": []
+                        "tsConfig": "src/tsconfig.spec.json",
+                        "karmaConfig": "src/karma.conf.js",
+                        "scripts": ["node_modules/chart.js/dist/Chart.js"],
+                        "styles": ["node_modules/font-awesome/css/font-awesome.css", "src/styles/app.scss"],
+                        "assets": ["src/assets", "src/favicon.ico"]
                     }
                 },
                 "lint": {
                     "builder": "@angular-devkit/build-angular:tslint",
                     "options": {
-                        "tsConfig": [
-                            "tsconfig.app.json",
-                            "tsconfig.spec.json",
-                            "e2e/tsconfig.json"
-                        ],
+                        "tsConfig": ["src/tsconfig.app.json", "src/tsconfig.spec.json"],
                         "exclude": ["**/node_modules/**"]
                     }
-                },
+                }
+            }
+        },
+        "test-ng7-e2e": {
+            "root": "e2e/",
+            "projectType": "application",
+            "prefix": "",
+            "architect": {
                 "e2e": {
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
                         "protractorConfig": "e2e/protractor.conf.js",
-                        "devServerTarget": "sb-admin-angular:serve"
+                        "devServerTarget": "test-ng7:serve"
                     },
                     "configurations": {
                         "production": {
-                            "devServerTarget": "sb-admin-angular:serve:production"
+                            "devServerTarget": "test-ng7:serve:production"
                         }
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": "e2e/tsconfig.e2e.json",
+                        "exclude": ["**/node_modules/**"]
                     }
                 }
             }
         }
     },
-    "defaultProject": "sb-admin-angular"
+    "defaultProject": "test-ng7",
+    "schematics": {
+        "@schematics/angular:component": {
+            "prefix": "app",
+            "styleext": "scss"
+        },
+        "@schematics/angular:directive": {
+            "prefix": "app"
+        }
+    }
 }

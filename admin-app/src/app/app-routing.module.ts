@@ -1,54 +1,28 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './shared';
 
 const routes: Routes = [
     {
         path: '',
-        pathMatch: 'full',
-        redirectTo: '/dashboard',
+        loadChildren: () => import('./layout/layout.module').then((m) => m.LayoutModule),
+        //  canActivate: [AuthGuard]
     },
-    {
-        path: 'charts',
-        loadChildren: () =>
-            import('modules/charts/charts-routing.module').then(m => m.ChartsRoutingModule),
-    },
-    {
-        path: 'dashboard',
-        loadChildren: () =>
-            import('modules/dashboard/dashboard-routing.module').then(
-                m => m.DashboardRoutingModule
-            ),
-    },
-    {
-        path: 'auth',
-        loadChildren: () =>
-            import('modules/auth/auth-routing.module').then(m => m.AuthRoutingModule),
-    },
+    { path: 'login', loadChildren: () => import('./login/login.module').then((m) => m.LoginModule) },
     {
         path: 'error',
-        loadChildren: () =>
-            import('modules/error/error-routing.module').then(m => m.ErrorRoutingModule),
+        loadChildren: () => import('./server-error/server-error.module').then((m) => m.ServerErrorModule)
     },
     {
-        path: 'tables',
-        loadChildren: () =>
-            import('modules/tables/tables-routing.module').then(m => m.TablesRoutingModule),
+        path: 'access-denied',
+        loadChildren: () => import('./access-denied/access-denied.module').then((m) => m.AccessDeniedModule)
     },
-    {
-        path: 'version',
-        loadChildren: () =>
-            import('modules/utility/utility-routing.module').then(m => m.UtilityRoutingModule),
-    },
-    {
-        path: '**',
-        pathMatch: 'full',
-        loadChildren: () =>
-            import('modules/error/error-routing.module').then(m => m.ErrorRoutingModule),
-    },
+    { path: 'not-found', loadChildren: () => import('./not-found/not-found.module').then((m) => m.NotFoundModule) },
+    { path: '**', redirectTo: 'not-found' }
 ];
 
 @NgModule({
     imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
-    exports: [RouterModule],
+    exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

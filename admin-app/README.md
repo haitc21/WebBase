@@ -1,100 +1,65 @@
-# SB Admin Angular
+# SB Admin rewritten in Angular9 and Bootstrap 4
 
-SB Admin Angular is a free and open-sourced Bootstrap themed Angular 9 starter project.
+Simple Dashboard Admin App built using Angular 9 and Bootstrap 4
 
-It shares the same project structure and subset of tooling from our professional offering,
-[SB Admin Pro Angular](https://themes.startbootstrap.com/sb-admin-pro-angular/),
-so much of the [SB Admin Pro Angular Documentation](https://docs.startbootstrap.com/sb-admin-pro-angular/quickstart) is applicable.
+This project is a port of the famous Free Admin Bootstrap Theme [SB Admin v8.0](http://startbootstrap.com/template-overviews/sb-admin-2/) to Angular9 Theme.
 
-In particular the documentation for [Structure](https://docs.startbootstrap.com/sb-admin-pro-angular/structure-root-level),
-and the documentation for [SBPro Schematics](https://docs.startbootstrap.com/sb-admin-pro-angular/development-general#sb-pro-schematics)
+Powered by [StartAngular](http://startangular.com/) & [StrapUI](http://strapui.com/)
 
-SB Admin Angular comes with a base implementation of navigation and layouts.
+## [Demo](http://rawgit.com/start-angular/SB-Admin-BS4-Angular-6/master/dist/)
 
-For professionally designed components (including an advanced SideNav), 100% code coverage,
-starter cypress tests and more, please consider our professional offering:
-[SB Admin Pro Angular](https://themes.startbootstrap.com/sb-admin-pro-angular/)
+## [SB Admin Material version](https://github.com/start-javascript/sb-admin-material)
 
-## Quick Start
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.2.
 
-```bash
-git clone git@github.com:startbootstrap/sb-admin-angular.git
-cd sb-admin-angular
-npm install
-npm start
-```
+### Introduction
 
-`npm start` should open a browser window to <http://localhost:4200>
+Provides fast, reliable and extensible starter for the development of Angular projects.
 
-By default angular runs on port 4200. To change this port you can run:
+`sb-admin-bs4-angular9` provides the following features:
 
-```bash
-# This starts the development server on port 4205,
-# but you can use any port you'd like
-export PORT=4205 && npm start
-```
+-   Developed using boostrap-v6.0.0
+-   angular-v9.0.2
+-   angular/cli-v9.0.2
+-   [ng-bootstrap-v6.0.0](https://github.com/ng-bootstrap/)
+-   [ngx-translate-v12.1.1](https://github.com/ngx-translate)
+-   Following the best practices.
+-   Ahead-of-Time compilation support.
+-   Official Angular i18n support.
+-   Production and development builds.
+-   Tree-Shaking production builds.
 
-## Tests
+### How to start
 
-### Unit Tests
+**Note** that this seed project requires **node >=v8.9.0 and npm >=4**.
+
+In order to start the project use:
 
 ```bash
-npm run test
+$ git clone https://github.com/start-angular/SB-Admin-BS4-Angular-8.git
+$ cd SB-Admin-BS4-Angular-8
+# install the project's dependencies
+$ npm install
+# watches your files and uses livereload by default run `npm start` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+$ npm start
+# prod build, will output the production application in `dist`
+# the produced code can be deployed (rsynced) to a remote server
+$ npm run build
 ```
 
-### e2e
+### Code scaffolding
 
-```bash
-npm run e2e
-```
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
 
-## Production
+### Running unit tests
 
-SB Admin Angular come with a production ready Dockerfile and build scripts.
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-You can get Docker [here](https://www.docker.com/get-started)
+### Running end-to-end tests
 
-```bash
-npm run docker:build
-npm run docker:run
-```
+Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+Before running the tests make sure you are serving the app via `ng serve`.
 
-## Generate Code
+### Further help
 
-```bash
-npm run generate:module -- --path src/modules --name Test
-npm run generate:component -- --path src/modules/test/containers --name Test
-npm run generate:component -- --path src/modules/test/components --name Test
-npm run generate:directive -- --path src/modules/test/directives --name Test
-npm run generate:service -- --path src/modules/test/services --name Test
-```
-
-_Note: Creating a Component and a Container use the same command,
-the difference is just the paths and how they are used._
-
-### MVCC
-
-Containers and Components are both Angular Components, but used in different ways.
-
-Containers should arrange Components.
-
-Obviously this can become subjective, but MVCC is the paradigm that we subscribe to.
-
-## Troubleshooting
-
-### npm start
-
-If you receive memory issues adjust
-`max_old_space_size` in the `ng` command of the `package.json`:
-
-```json
-"ng": "cross-env NODE_OPTIONS=--max_old_space_size=2048 ./node_modules/.bin/ng",
-```
-
-You can adjust 2048 to any number you need.
-
-For more information about why you may need `--max_old_space_size`
-see [this article](https://medium.com/@ashleydavis75/node-js-memory-limitations-30d3fe2664c0).
-
-Keep in mind that this project only uses node to build the angular application.
-There is no production dependency on node.
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
