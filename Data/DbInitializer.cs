@@ -69,7 +69,7 @@ namespace WebBase.Data
                     var user = await _userManager.FindByNameAsync("admin");
                     await _userManager.AddToRoleAsync(user, AdminRoleName);
                 }
-                var result = await _userManager.CreateAsync(new AppUser
+                var result2 = await _userManager.CreateAsync(new AppUser
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserName = "member",
