@@ -56,17 +56,21 @@ namespace WebBase
                 },
                 new Client
                 {
-                    ClientName = "Angular Admin",
-                    ClientId = "angular_admin",
+                    ClientId = "webbase_admin",
+                    ClientName = "WebBase Admin",
                     AccessTokenType = AccessTokenType.Reference,
-                    RequireConsent = false,
-
-                    RequireClientSecret = false,
                     AllowedGrantTypes = GrantTypes.Code,
-                    RequirePkce = true,
 
+                    RequireConsent = false,
+                    RequireClientSecret = false,
+                    RequirePkce = true,
                     AllowAccessTokensViaBrowser = true,
-                    RedirectUris = { "http://localhost:4200/auth-callback" },
+
+                    RedirectUris = {
+                         "http://localhost:4200",
+                         "http://localhost:4200/auth-callback",
+                         "http://localhost:4200/silent-renew.html"
+                    },
                     PostLogoutRedirectUris = { "http://localhost:4200" },
                     AllowedCorsOrigins = { "http://localhost:4200" },
                     AllowedScopes = new List<string>

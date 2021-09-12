@@ -31,6 +31,7 @@ namespace WebBase
         }
 
         public IConfiguration Configuration { get; }
+        private readonly string wbSpecificOrigins = "WBpSpecificOrigins";
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -77,6 +78,17 @@ namespace WebBase
                 .AddInMemoryApiResources(Config.Apis)
                 .AddAspNetIdentity<AppUser>()
                 .AddProfileService<IdentityProfileService>();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(wbSpecificOrigins,
+                builder =>
+                {
+                    builder.WithOrigins(Configuration["AllowOrigins"])
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
 
             // loi fluent validation tra ve cho model state
             services.Configure<ApiBehaviorOptions>(options =>
@@ -170,6 +182,8 @@ namespace WebBase
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors(wbSpecificOrigins);
 
             app.UseEndpoints(endpoints =>
             {

@@ -198,17 +198,13 @@ namespace IdentityServerHost.Quickstart.UI
         [HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
         {
-            // build a model so the logout page knows what to display
-            var vm = await BuildLogoutViewModelAsync(logoutId);
-
-            if (vm.ShowLogoutPrompt == false)
+            await _signInManager.SignOutAsync();
+            var logout = await _interaction.GetLogoutContextAsync(logoutId);
+            if (string.IsNullOrEmpty(logout.PostLogoutRedirectUri))
             {
-                // if the request for logout was properly authenticated from IdentityServer, then
-                // we don't need to show the prompt and can just log the user out directly.
-                return await Logout(vm);
+                return this.LoadingPage("Redirect", "login");
             }
-
-            return View(vm);
+            return Redirect(logout.PostLogoutRedirectUri);
         }
 
         /// <summary>
@@ -403,7 +399,7 @@ namespace IdentityServerHost.Quickstart.UI
         #region Forgot Password
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword(string returnUrl = null)
+        public IActionResult ForgotPassword(string returnUrl = null)
         {
             ViewBag.ReturnUrl = returnUrl;
             var model = new ForgotPasswordModel();
@@ -433,7 +429,7 @@ namespace IdentityServerHost.Quickstart.UI
                 var callbackUrl = Url.Action(
                       "ResetPassword",
                        "Account",
-                       new { userName = user.UserName,email = user.Email , code = code, returnUrl = model.ReturnUrl },
+                       new { userName = user.UserName, email = user.Email, code = code, returnUrl = model.ReturnUrl },
                        protocol: Request.Scheme);
 
                 // Gửi email
@@ -453,7 +449,7 @@ namespace IdentityServerHost.Quickstart.UI
         #region ResetPassword
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(string userName,string email ,string code,string returnUrl = null)
+        public IActionResult ResetPassword(string userName, string email, string code, string returnUrl = null)
         {
             if (code == null)
             {
@@ -509,7 +505,7 @@ namespace IdentityServerHost.Quickstart.UI
         #region ResetPasswordConfirmation
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPasswordConfirmation(string returnUrl)
+        public IActionResult ResetPasswordConfirmation(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl ?? "/";
             return View();

@@ -4,10 +4,10 @@ import { BaseService } from './base.service';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { User, Pagination } from '../models';
-import { UtilitiesService } from './utilities.service';
+import { UtilitiesService } from './utilitie.service';
 
 @Injectable({ providedIn: 'root' })
-export class UsersService extends BaseService {
+export class UserService extends BaseService {
     private _sharedHeaders = new HttpHeaders();
 
     constructor(private http: HttpClient,
@@ -16,7 +16,19 @@ export class UsersService extends BaseService {
         this._sharedHeaders = this._sharedHeaders.set('Content-Type', 'application/json');
 
     }
-    
+
+    getAll() {
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json'
+            })
+        };
+        return this.http.get<User[]>(`${environment.apiUrl}/api/users`, httpOptions)
+            .pipe(map((response: User[]) => {
+                return response;
+            }), catchError(this.handleError));
+    }
+
     add(entity: User) {
         return this.http.post(`${environment.apiUrl}/api/users`, JSON.stringify(entity), { headers: this._sharedHeaders })
             .pipe(catchError(this.handleError));
