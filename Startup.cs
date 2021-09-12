@@ -77,8 +77,11 @@ namespace WebBase
                 .AddInMemoryClients(Config.Clients)
                 .AddInMemoryApiResources(Config.Apis)
                 .AddAspNetIdentity<AppUser>()
-                .AddProfileService<IdentityProfileService>();
+                .AddProfileService<IdentityProfileService>()
+                .AddDeveloperSigningCredential(); // dùng trong môi trường dev
 
+            // cho phép các client khác truy cập vào api qua policy
+            // nhớ UseCors ở dưới app (sau autho)
             services.AddCors(options =>
             {
                 options.AddPolicy(wbSpecificOrigins,
@@ -96,8 +99,9 @@ namespace WebBase
                 options.SuppressModelStateInvalidFilter = true;
             });
 
-            // not recommended for production - you need to store your key material somewhere secure
-            builder.AddDeveloperSigningCredential();
+            //dang ki tat ca class cung kieu
+            services.AddControllersWithViews()
+                    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RolsCreateValid>());
 
             services.AddAuthentication()
                 .AddGoogle(options =>
@@ -149,8 +153,7 @@ namespace WebBase
                     }
                 });
             });
-            services.AddControllersWithViews()
-                     .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RolsCreateValid>()); //dang ki tat ca class cung kieu
+
             // Service
             services.AddTransient<DbInitializer>();
             services.AddTransient<IEmailSender, EmailSenderService>();

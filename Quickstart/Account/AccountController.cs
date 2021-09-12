@@ -178,7 +178,6 @@ namespace IdentityServerHost.Quickstart.UI
                     {
                         await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId));
                         ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
-
                     }
                 }
             }
@@ -200,6 +199,8 @@ namespace IdentityServerHost.Quickstart.UI
         {
             await _signInManager.SignOutAsync();
             var context = await _interaction.GetLogoutContextAsync(logoutId);
+            // context bi null phiên bản identity erver 4.0.0 mà oidc-client 1.11.5
+            // update identity server là ok
             if (string.IsNullOrEmpty(context.PostLogoutRedirectUri))
             {
                 return this.LoadingPage("Redirect", "login");
@@ -318,6 +319,7 @@ namespace IdentityServerHost.Quickstart.UI
         #endregion ConfirmEmail
 
         #region Register
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Register(string returnUrl = null)
@@ -397,6 +399,7 @@ namespace IdentityServerHost.Quickstart.UI
         #endregion Register
 
         #region Forgot Password
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ForgotPassword(string returnUrl = null)
@@ -406,6 +409,7 @@ namespace IdentityServerHost.Quickstart.UI
             model.ReturnUrl = returnUrl;
             return View(model);
         }
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
@@ -444,9 +448,11 @@ namespace IdentityServerHost.Quickstart.UI
 
             return View(model);
         }
-        #endregion
+
+        #endregion Forgot Password
 
         #region ResetPassword
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPassword(string userName, string email, string code, string returnUrl = null)
@@ -469,6 +475,7 @@ namespace IdentityServerHost.Quickstart.UI
                 return View(model);
             }
         }
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
@@ -500,9 +507,11 @@ namespace IdentityServerHost.Quickstart.UI
             }
             return View(model);
         }
-        #endregion
+
+        #endregion ResetPassword
 
         #region ResetPasswordConfirmation
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPasswordConfirmation(string returnUrl)
@@ -510,7 +519,8 @@ namespace IdentityServerHost.Quickstart.UI
             ViewBag.ReturnUrl = returnUrl ?? "/";
             return View();
         }
-        #endregion
+
+        #endregion ResetPasswordConfirmation
 
         #region helper APIs for the AccountController
 
