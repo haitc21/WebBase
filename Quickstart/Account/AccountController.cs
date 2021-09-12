@@ -199,12 +199,12 @@ namespace IdentityServerHost.Quickstart.UI
         public async Task<IActionResult> Logout(string logoutId)
         {
             await _signInManager.SignOutAsync();
-            var logout = await _interaction.GetLogoutContextAsync(logoutId);
-            if (string.IsNullOrEmpty(logout.PostLogoutRedirectUri))
+            var context = await _interaction.GetLogoutContextAsync(logoutId);
+            if (string.IsNullOrEmpty(context.PostLogoutRedirectUri))
             {
                 return this.LoadingPage("Redirect", "login");
             }
-            return Redirect(logout.PostLogoutRedirectUri);
+            return Redirect(context.PostLogoutRedirectUri);
         }
 
         /// <summary>
