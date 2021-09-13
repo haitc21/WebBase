@@ -8,6 +8,7 @@ import { RolesComponent } from './roles/roles.component';
 import { PermissionsComponent } from './permissions/permissions.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
     CommonModule,
     SystemsRoutingModule,
     TranslateModule,
-    NgbDropdownModule
+    NgbDropdownModule,
+    NzButtonModule
   ]
 })
 export class SystemsModule { }
