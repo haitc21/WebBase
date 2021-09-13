@@ -16,17 +16,17 @@ export class HeaderComponent implements OnInit {
     isAuthenticated: boolean;
     subscription: Subscription;
 
-    constructor(private translate: TranslateService,
-        public router: Router,
-        private authService: AuthService) {
+    constructor(private _translate: TranslateService,
+        public _router: Router,
+        private _authService: AuthService) {
 
-        this.subscription = this.authService.authNavStatus$
+        this.subscription = this._authService.authNavStatus$
             .subscribe(
                 status => this.isAuthenticated = status
             );
-        this.userName = this.authService.name;
+        this.userName = this._authService.name;
 
-        this.router.events.subscribe(val => {
+        this._router.events.subscribe(val => {
             if (
                 val instanceof NavigationEnd &&
                 window.innerWidth <= 992 &&
@@ -57,10 +57,10 @@ export class HeaderComponent implements OnInit {
     }
 
     async signout() {
-        await this.authService.signout();
+        await this._authService.signout();
     }
 
     changeLang(language: string) {
-        this.translate.use(language);
+        this._translate.use(language);
     }
 }

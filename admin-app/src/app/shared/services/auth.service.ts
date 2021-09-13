@@ -2,11 +2,16 @@ import { Injectable } from '@angular/core';
 import { Profile, User, UserManager, UserManagerSettings } from 'oidc-client';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { ProfileModel } from '../models';
 import { BaseService } from './base.service';
 
 @Injectable({
   providedIn: 'root'
 })
+/** @internal
+ * Quản lý đăng nhập, đăng xuất
+ * Authen và autho bằng SSO với Server IS4
+ */
 export class AuthService extends BaseService {
 
   // Observable navItem source
@@ -14,47 +19,58 @@ export class AuthService extends BaseService {
   // Observable navItem stream
   authNavStatus$ = this._authNavStatusSource.asObservable();
 
-  private manager = new UserManager(getClientSettings());
-  private user: User | null;
+  private _userManager = new UserManager(getClientSettings());
+  private _user: User | null;
   
   
   constructor() {
     super();
-    this.manager.getUser().then(user => {
-      this.user = user;
+    this._userManager.getUser().then(user => {
+      this._user = user;
       this._authNavStatusSource.next(this.isAuthenticated());
     });
   }
 
   login() {
-    return this.manager.signinRedirect();
+    return this._userManager.signinRedirect();
   }
 
   async completeAuthentication() {
-    this.user = await this.manager.signinRedirectCallback();
+    this._user = await this._userManager.signinRedirectCallback();
     this._authNavStatusSource.next(this.isAuthenticated());
   }
 
   isAuthenticated(): boolean {
-    return this.user != null && !this.user.expired;
+    return this._user != null && !this._user.expired;
   }
 
   get authorizationHeaderValue(): string {
-    if (this.user) {
-      return `${this.user.token_type} ${this.user.access_token}`;
+    if (this._user) {
+      return `${this._user.token_type} ${this._user.access_token}`;
     }
     return null;
   }
 
   get name(): string {
-    return this.user != null ? this.user.profile.name : '';
+    return this._user != null ? this._user.profile.name : '';
   }
 
-  get profile(): Profile {
-    return this.user != null ? this.user.profile : null;
+  get profile(): ProfileModel {
+    if (this._user != null) {
+      let resul = new ProfileModel(
+        this._user.profile.sub,
+        this._user.profile.name,
+        this._user.profile.email,
+        this._user.profile.role,
+        this._user.profile.Permissions
+      );
+      console.log(resul);
+      return resul;
+    }
+    return null;
   }
   async signout() {
-    await this.manager.signoutRedirect({'id_token_hint' : this.user.id_token});
+    await this._userManager.signoutRedirect({'id_token_hint' : this._user.id_token});
   }
 
 }

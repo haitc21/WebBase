@@ -1,4 +1,4 @@
-export class Pagination<T> {
+export class PaginationModel<T> {
     items: T[];
     totalRecords: number;
 }

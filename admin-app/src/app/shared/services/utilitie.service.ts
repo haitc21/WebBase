@@ -3,8 +3,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BaseService } from './base.service';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { Function } from '../models';
+import { FunctionModel } from '../models';
 
+/* @internal 
+* Chứa cá phương thức xử lý mảng, chuỗi
+*/
 @Injectable({ providedIn: 'root' })
 export class UtilitiesService extends BaseService {
   constructor(private http: HttpClient) {

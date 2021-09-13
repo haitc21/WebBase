@@ -1,5 +1,5 @@
-import { Permission } from './permission.model';
+import { PermissionModel } from './permission.model';
 
-export class PermissionUpdateRequest {
-    permissions: Permission[];
+export class PermissionUpdateRequestModel {
+    permissions: PermissionModel[];
 }

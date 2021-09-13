@@ -17,11 +17,13 @@ export class SidebarComponent implements OnInit {
 
     @Output() collapsedEvent = new EventEmitter<boolean>();
 
-    constructor(private translate: TranslateService,
-        public router: Router, private userService: UserService,
-        private authService: AuthService) {
+    constructor(
+        private _translate: TranslateService,
+        public _router: Router,
+        private _userService: UserService,
+        private _authService: AuthService) {
         this.loadMenu();
-        this.router.events.subscribe(val => {
+        this._router.events.subscribe(val => {
             if (
                 val instanceof NavigationEnd &&
                 window.innerWidth <= 992 &&
@@ -32,8 +34,8 @@ export class SidebarComponent implements OnInit {
         });
     }
     loadMenu() {
-        const profile = this.authService.profile;
-        this.userService.getMenuByUser(profile.sub).subscribe((response: Function[]) => {
+        const profile = this._authService.profile;
+        this._userService.getMenuByUser(profile.userId).subscribe((response: Function[]) => {
             this.functions = response;
             localStorage.setItem('functions', JSON.stringify(response));
         });
@@ -79,7 +81,7 @@ export class SidebarComponent implements OnInit {
     }
 
     changeLang(language: string) {
-        this.translate.use(language);
+        this._translate.use(language);
     }
 
     onLoggedout() {

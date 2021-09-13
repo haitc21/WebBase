@@ -7,15 +7,18 @@ import { AuthService } from '../services';
   providedIn: 'root'
 })
 
-// khi đăng nhập thành công tự đẩy token ra
+/** 
+ * @internal
+ * khi đăng nhập thành công tự đẩy token ra
+ **/
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private authService: AuthService) { }
+  constructor(private _authService: AuthService) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     request = request.clone({
       setHeaders: {
-        Authorization: `${this.authService.authorizationHeaderValue}`
+        Authorization: `${this._authService.authorizationHeaderValue}`
       }
     });
     return next.handle(request);

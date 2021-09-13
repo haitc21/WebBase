@@ -1,4 +1,4 @@
-export class PermissionScreen {
+export class PermissionScreenModel {
     id: string;
 
     name: string;

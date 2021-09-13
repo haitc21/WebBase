@@ -1,4 +1,4 @@
-export class Function {
+export class FunctionModel {
     id: string;
     name: string;
     url: string;

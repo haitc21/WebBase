@@ -38,34 +38,4 @@
             <app-stat [bgClass]="'danger'" [count]="13" [icon]="'fa-support'" [label]="'New Tickets!'"></app-stat>
         </div>
     </div>
-    <hr />
-    <ngb-alert (close)="closeAlert(alert)" *ngFor="let alert of alerts" [type]="alert.type">{{
-        alert.message
-    }}</ngb-alert>
-    <hr />
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card card-default">
-                <div class="card-header"><i class="fa fa-clock-o fa-fw"></i> Responsive Timeline</div>
-                <!-- /.card-header -->
-                <app-timeline></app-timeline>
-                <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-        </div>
-        <!-- /.col-lg-8 -->
-        <div class="col-lg-4">
-            <div class="card card-default mb-3">
-                <div class="card-header"><i class="fa fa-bell fa-fw"></i> Notifications card</div>
-                <!-- /.card-header -->
-                <app-notification></app-notification>
-                <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-
-            <app-chat></app-chat>
-            <!-- /.card .chat-card -->
-        </div>
-        <!-- /.col-lg-4 -->
-    </div>
 </div>

@@ -11,15 +11,15 @@ import { AuthService } from '../shared/services';
 })
 export class LoginComponent implements OnInit {
     constructor(
-        private authService: AuthService,
-        private spinner: NgxSpinnerService
+        private _authService: AuthService,
+        private _spinner: NgxSpinnerService
     ) { }
 
     ngOnInit() { }
 
     login() {
-        this.spinner.show();
-        this.authService.login();
+        this._spinner.show();
+        this._authService.login();
     }
 
 }
