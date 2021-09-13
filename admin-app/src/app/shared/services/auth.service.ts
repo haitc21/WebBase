@@ -54,9 +54,6 @@ export class AuthService extends BaseService {
     return this.user != null ? this.user.profile : null;
   }
   async signout() {
-    console.log({'id_token_hint' : this.user.id_token});
-    console.log({'post_logout_redirect_uri' : this.manager.settings.post_logout_redirect_uri});
-    console.log({'client_id' : this.manager.settings.client_id});
     await this.manager.signoutRedirect({'id_token_hint' : this.user.id_token});
   }
 

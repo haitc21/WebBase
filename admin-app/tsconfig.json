@@ -19,13 +19,13 @@
             "dom"
         ],
         // path để khi import nó thay cái đường dẫn cấu hình thành @
-        "paths": {
-            "@app/*": [
-                "src/app/*"
-            ],
-            "@environments/*": [
-                "src/environments/*"
-            ]
-        }
+        // "paths": {
+        //     "@app/*": [
+        //         "src/app/*"
+        //     ],
+        //     "@environments/*": [
+        //         "src/environments/*"
+        //     ]
+        // }
     }
 }

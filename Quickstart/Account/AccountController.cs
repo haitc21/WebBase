@@ -201,6 +201,10 @@ namespace IdentityServerHost.Quickstart.UI
             var context = await _interaction.GetLogoutContextAsync(logoutId);
             // context bi null phiên bản identity erver 4.0.0 mà oidc-client 1.11.5
             // update identity server là ok
+
+            // post_logout_redirect_uri gửi về từ client
+            // phải tồn tại traong list PostLogoutRedirectUri cấu hình ở Server
+            // nếu k có thì nó sẽ null
             if (string.IsNullOrEmpty(context.PostLogoutRedirectUri))
             {
                 return this.LoadingPage("Redirect", "login");

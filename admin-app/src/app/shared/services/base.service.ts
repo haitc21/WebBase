@@ -4,6 +4,11 @@ import { throwError } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
+/** 
+ * @internal
+ * Handle errors cho các service kế thừa nó
+ * qua hàm handleError
+ *  */
 export class BaseService {
 protected handleError(errorResponse: any) {
   if (errorResponse.error.message) {

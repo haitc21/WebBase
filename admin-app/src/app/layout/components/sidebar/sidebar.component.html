@@ -1,40 +1,34 @@
-<nav [ngClass]="{ sidebarPushRight: isActive, collapsed: collapsed }" class="sidebar">
+<nav class="sidebar" [ngClass]="{sidebarPushRight: isActive, collapsed: collapsed}">
     <div class="list-group">
-        <a [routerLinkActive]="['router-link-active']" class="list-group-item" routerLink="/dashboard">
-            <i class="fa fa-fw fa-dashboard"></i>&nbsp;
-            <span>{{ 'Dashboard' | translate }}</span>
-        </a>
-        <div class="nested-menu">
-            <a (click)="addExpandClass('pages')" class="list-group-item">
-                <i class="fa fa-plus"></i>&nbsp;
-                <span>{{ 'Menu' | translate }}</span>
+        <div class="nested-menu" *ngFor="let item of functions">
+            <a class="list-group-item" (click)="addExpandClass(item.id)"
+                *ngIf="item.children.length > 0">
+                <i class="fa {{item.icon}}"></i>&nbsp;
+                <span>{{ item.name }}</span>
             </a>
-            <li [class.expand]="showMenu === 'pages'" class="nested">
+            <a [routerLinkActive]="['router-link-active']" routerLink="{{item.url}}"
+                *ngIf="item.children.length == 0" class="list-group-item">
+                <i class="fa {{item.icon}}"></i>&nbsp;
+                <span>{{ item.name }}</span>
+            </a>
+            <li *ngIf="item.children.length > 0" class="nested" [class.expand]="showMenu === item.id">
                 <ul class="submenu">
-                    <li>
-                        <a href="javascript:void(0)">
-                            <i class="fa fa-monument"></i>&nbsp;
-                            <span>{{ 'Submenu' | translate }}</span>
+                    <li *ngFor="let subItem of item.children">
+                        <a href="javascript:void(0)" routerLink="{{subItem.url}}"
+                            [routerLinkActive]="['router-link-active']">
+                            <i class="fa {{subItem.icon}}"></i>&nbsp;
+                            <span>{{ subItem.name}}</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="javascript:void(0)">
-                            <i class="fa fa-monument"></i>&nbsp;
-                            <span>{{ 'Submenu' | translate }}</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0)">
-                            <i class="fa fa-monument"></i>&nbsp;
-                            <span>{{ 'Submenu' | translate }}</span>
-                        </a>
-                    </li>
+
                 </ul>
             </li>
         </div>
+
+
     </div>
-    <div (click)="toggleCollapsed()" [ngClass]="{ collapsed: collapsed }" class="toggle-button">
-        <i class="fa fa-fw fa-angle-double-{{ collapsed ? 'right' : 'left' }}"></i>&nbsp;
+    <div class="toggle-button" [ngClass]="{collapsed: collapsed}" (click)="toggleCollapsed()">
+        <i class="fa fa-fw fa-angle-double-{{collapsed?'right':'left'}}"></i>&nbsp;
         <span>{{ 'Collapse Sidebar' | translate }}</span>
     </div>
 </nav>

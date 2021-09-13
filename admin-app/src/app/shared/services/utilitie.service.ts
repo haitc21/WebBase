@@ -10,6 +10,12 @@ export class UtilitiesService extends BaseService {
   constructor(private http: HttpClient) {
     super();
   }
+  /** 
+   * @internal Menu lấy từ api là 1 mảng phẳng
+   * tức là các menu con nó sẽ thành các bản ghi khác nhau
+   * chuyển về các menu con là các mảng
+   * 
+  */
   UnflatteringForLeftMenu = (arr: any[]): any[] => {
     const map = {};
     const roots: any[] = [];

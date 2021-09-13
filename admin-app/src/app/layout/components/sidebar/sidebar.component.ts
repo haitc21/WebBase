@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { AuthService, UserService } from '../../../shared';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -12,23 +13,38 @@ export class SidebarComponent implements OnInit {
     collapsed: boolean;
     showMenu: string;
     pushRightClass: string;
+    public functions: Function[];
 
     @Output() collapsedEvent = new EventEmitter<boolean>();
 
-    constructor(private translate: TranslateService, public router: Router) {
-        this.router.events.subscribe((val) => {
-            if (val instanceof NavigationEnd && window.innerWidth <= 992 && this.isToggled()) {
+    constructor(private translate: TranslateService,
+        public router: Router, private userService: UserService,
+        private authService: AuthService) {
+        this.loadMenu();
+        this.router.events.subscribe(val => {
+            if (
+                val instanceof NavigationEnd &&
+                window.innerWidth <= 992 &&
+                this.isToggled()
+            ) {
                 this.toggleSidebar();
             }
         });
     }
-
+    loadMenu() {
+        const profile = this.authService.profile;
+        this.userService.getMenuByUser(profile.sub).subscribe((response: Function[]) => {
+            this.functions = response;
+            localStorage.setItem('functions', JSON.stringify(response));
+        });
+    }
     ngOnInit() {
         this.isActive = false;
         this.collapsed = false;
         this.showMenu = '';
         this.pushRightClass = 'push-right';
     }
+
 
     eventCalled() {
         this.isActive = !this.isActive;

@@ -95,14 +95,14 @@ namespace WebBase.Data
             {
                 _context.Functions.AddRange(new List<Function>
                 {
-                    new Function {Id = "DASHBOARD", Name = "DashBoard", ParentId = null, SortOrder = 1,Url = "/dashboard",Icon="fa-dashboard" },
+                    new Function {Id = "DASHBOARD", Name = "DashBoard", ParentId = null, SortOrder = 0,Url = "/dashboard",Icon="fa-dashboard" },
 
-                    new Function {Id = "SYSTEM", Name = "Hệ thống", ParentId = null, Url = "/systems",Icon="fa-th-list" },
+                    new Function {Id = "SYSTEM", Name = "Hệ thống", ParentId = null, Url = "/systems",Icon="fa-th-list", SortOrder = 1 },
 
-                    new Function {Id = "SYSTEM_USER", Name = "Người dùng",ParentId = "SYSTEM",Url = "/systems/users",Icon="fa-desktop"},
-                    new Function {Id = "SYSTEM_ROLE", Name = "Nhóm quyền",ParentId = "SYSTEM",Url = "/systems/roles",Icon="fa-desktop"},
-                    new Function {Id = "SYSTEM_FUNCTION", Name = "Chức năng",ParentId = "SYSTEM",Url = "/systems/functions",Icon="fa-desktop"},
-                    new Function {Id = "SYSTEM_PERMISSION", Name = "Quyền hạn",ParentId = "SYSTEM",Url = "/systems/permissions",Icon="fa-desktop"},
+                    new Function {Id = "SYSTEM_USER", Name = "Người dùng",ParentId = "SYSTEM",Url = "/systems/users",Icon="fa-users", SortOrder = 0 },
+                    new Function {Id = "SYSTEM_ROLE", Name = "Nhóm quyền",ParentId = "SYSTEM",Url = "/systems/roles",Icon="fa-object-group", SortOrder = 2 },
+                    new Function {Id = "SYSTEM_FUNCTION", Name = "Chức năng",ParentId = "SYSTEM",Url = "/systems/functions",Icon="fa-subway", SortOrder = 1 },
+                    new Function {Id = "SYSTEM_PERMISSION", Name = "Quyền hạn",ParentId = "SYSTEM",Url = "/systems/permissions",Icon="fa-desktop", SortOrder = 3 },
                 });
                 await _context.SaveChangesAsync();
             }
