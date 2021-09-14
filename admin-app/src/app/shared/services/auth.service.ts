@@ -64,7 +64,6 @@ export class AuthService extends BaseService {
         this._user.profile.role,
         this._user.profile.Permissions
       );
-      console.log(resul);
       return resul;
     }
     return null;

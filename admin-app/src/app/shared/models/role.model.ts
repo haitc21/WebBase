@@ -1,5 +1,6 @@
 export class RoleModel
 {
-    id: string;
-    name: string;
+    Id: string;
+    Name: string;
+    Description: string;
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -9,7 +9,7 @@ import { AuthService } from '../../../shared';
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
     public pushRightClass: string;
 
     userName: string;
@@ -62,5 +62,8 @@ export class HeaderComponent implements OnInit {
 
     changeLang(language: string) {
         this._translate.use(language);
+    }
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 }

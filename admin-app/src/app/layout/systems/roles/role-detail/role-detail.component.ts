@@ -1,24 +1,24 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { MessageConstants, NotificationService, PaginationModel, RoleModel, RoleService } from './../../../shared';
-import { RoleDetailComponent } from './role-detail/role-detail.component';
+import { MessageConstants, NotificationService, PaginationModel, RoleModel, RoleService } from '../../../../shared';
 
 @Component({
-  selector: 'app-roles',
-  templateUrl: './roles.component.html',
-  styleUrls: ['./roles.component.scss']
+  selector: 'app-role-detail',
+  templateUrl: './role-detail.component.html',
+  styleUrls: ['./role-detail.component.scss']
 })
-
-export class RolesComponent implements OnInit, OnDestroy {
+export class RoleDetailComponent implements OnInit, OnDestroy {
+  // Subscription để quản lý các subscribe lúc mà unsubscribe (ngOnDestroy)
   private subscription = new Subscription();
   // Default
+  // public bsModalRef: BsModalRef; tí đổi moddal của ant
   public blockedPanel = false;
   /**
    * Paging
    */
   public pageIndex = 1;
-  public pageSize = 1;
-  public totalPages = 10;
+  public pageSize = 10;
+  public pageDisplay = 10;
   public totalRecords: number;
   public keyword = '';
   // Role
@@ -46,7 +46,6 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.pageIndex = this.pageIndex;
     this.pageSize = this.pageSize;
     this.totalRecords = response.totalRecord;
-    this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
     if (this.selectedItems.length === 0 && this.items.length > 0) {
       this.selectedItems.push(this.items[0]);
     }
@@ -54,15 +53,45 @@ export class RolesComponent implements OnInit, OnDestroy {
       this.selectedItems = this.items.filter(x => x.Id === selectedId);
     }
   }
+  pageChanged(event: any): void {
+    this.pageIndex = event.page + 1;
+    this.pageSize = event.rows;
+    this.loadData();
+  }
 
-changePage(value: any) {
-  this.pageIndex = value;
-  this.loadData();
-}
-changeSize(value) {
-  this.pageSize = value;
-  this.loadData();
-}
+  showAddModal() {
+    // this.bsModalRef = this.modalService.show(RolesDetailComponent,
+    //   {
+    //     class: 'modal-lg',
+    //     backdrop: 'static'
+    //   });
+    // this.bsModalRef.content.savedEvent.subscribe((response) => {
+    //   // this.bsModalRef.hide();
+    //   this.loadData();
+    //   this.selectedItems = [];
+    // });
+  }
+  showEditModal() {
+    if (this.selectedItems.length === 0) {
+      this.notificationService.showError(MessageConstants.NOT_CHOOSE_ANY_RECORD);
+      return;
+    }
+    const initialState = {
+      entityId: this.selectedItems[0].id
+    };
+    // this.bsModalRef = this.modalService.show(RolesDetailComponent,
+    //   {
+    //     initialState: initialState,
+    //     class: 'modal-lg',
+    //     backdrop: 'static'
+    //   });
+
+    // this.subscription.add(this.bsModalRef.content.savedEvent.subscribe((response) => {
+    //   // this.bsModalRef.hide();
+    //   this.loadData(response.id);
+    // }));
+  }
+
   deleteItems() {
     const id = this.selectedItems[0].id;
     this.notificationService.showConfirmation(MessageConstants.CONFIRM_DELETE_MSG,
