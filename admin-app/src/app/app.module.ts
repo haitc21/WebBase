@@ -17,6 +17,9 @@ import vi from '@angular/common/locales/vi';
 registerLocaleData(vi);
 import { en_US, NZ_I18N, vi_VN } from 'ng-zorro-antd/i18n';
 
+
+import { NzIconModule } from 'ng-zorro-antd/icon';
+
 @NgModule({
     imports: [
         CommonModule,

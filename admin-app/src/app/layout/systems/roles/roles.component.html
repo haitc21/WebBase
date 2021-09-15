@@ -1,42 +1,74 @@
 <p>Danh sách nhóm quyền</p>
-<div class="animated fadeIn">
-    <nz-table
-        #roles
-        [nzData]="items"
-        [nzFrontPagination]="false"
-    >
-        <thead>
-            <tr>
-                <th>Tên nhóm quyền</th>
-                <th>Mô tả</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let role of roles.data">
-                <td>{{ role.name }}</td>
-                <td>{{ role.description }}</td>
-            </tr>
-        </tbody>
-    </nz-table>
-    <nz-pagination
-        [nzPageIndex]="pageIndex"
-        [nzPageSize]="pageSize"
-        (nzPageIndexChange)="changePage($event)"
-        (nzPageSizeChange)="changeSize($event)"
-        [nzTotal]="totalPages"
-        nzShowSizeChanger
-        [nzPageSizeOptions]="[5, 10, 15, 20, 25, 30]"
-        [nzShowQuickJumper]="true"
-        [nzResponsive]="true"
-        [nzItemRender]="renderItemTemplate"
-    ></nz-pagination>
-    <ng-template #renderItemTemplate let-type let-page="page">
-        <ng-container [ngSwitch]="type">
-            <a *ngSwitchCase="'page'">{{ page }}</a>
-            <a *ngSwitchCase="'prev'"><</a>
-            <a *ngSwitchCase="'next'">></a>
-            <a *ngSwitchCase="'prev_5'"><<</a>
-            <a *ngSwitchCase="'next_5'">>></a>
-        </ng-container>
+<nz-layout>
+    <nz-header>
+        <button nz-button nzType="primary" (click)="createTplModal(editTitle, editContent, editFooter)">
+            <span>Thêm</span>
+        </button>
+    </nz-header>
+    <nz-content>
+        <nz-table #roles [nzData]="items" [nzFrontPagination]="false">
+            <thead>
+                <tr>
+                    <th>Tên nhóm quyền</th>
+                    <th>Mô tả</th>
+                    <th>Tác vụ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let role of roles.data">
+                    <td>{{ role.name }}</td>
+                    <td>{{ role.description }}</td>
+                    <td>
+                        <i class="fa fa-edit tblicon" title="Sửa" (click)="createTplModal(editTitle, editContent, editFooter,role)"></i>
+                        <i class="fa fa-trash tblicon" title="Xóa" (click)="deleteItem(role.id)"></i>
+                    </td>
+                </tr>
+            </tbody>
+        </nz-table>
+    </nz-content>
+    <nz-footer>
+        <section id="phanTrang">
+            <nz-pagination
+                [nzPageIndex]="pageIndex"
+                [nzPageSize]="pageSize"
+                (nzPageIndexChange)="changePage($event)"
+                (nzPageSizeChange)="changeSize($event)"
+                [nzTotal]="totalPages"
+                nzShowSizeChanger
+                [nzPageSizeOptions]="[5, 10, 15, 20, 25, 30]"
+                [nzShowQuickJumper]="true"
+                [nzResponsive]="true"
+                [nzItemRender]="renderItemTemplate"
+                [nzShowTotal]="totalTemplate"
+            ></nz-pagination>
+            <ng-template #totalTemplate let-total>{{ totalPages }} trang</ng-template>
+            <ng-template #renderItemTemplate let-type let-page="page">
+                <ng-container [ngSwitch]="type">
+                    <a *ngSwitchCase="'page'">{{ page }}</a>
+                    <a *ngSwitchCase="'prev'"><</a>
+                    <a *ngSwitchCase="'next'">></a>
+                    <a *ngSwitchCase="'prev_5'"><<</a>
+                    <a *ngSwitchCase="'next_5'">>></a>
+                </ng-container>
+            </ng-template>
+        </section>
+    </nz-footer>
+</nz-layout>
+
+<section id="modalEdit">
+    <ng-template #editTitle>
+        <span>Chỉnh sửa nhóm quyền</span>
     </ng-template>
-</div>
+    <ng-template #editContent let-params>
+        <p>some contents...</p>
+        <p>some contents...</p>
+        <p>{{ params.value | json }}</p>
+    </ng-template>
+    <ng-template #editFooter let-ref="modalRef">
+        <button nz-button (click)="ref.destroy()">Đóng</button>
+        <button nz-button nzType="primary" (click)="destroyTplModal(ref)" [nzLoading]="tplModalButtonLoading">
+            Lưu
+        </button>
+    </ng-template>
+</section>
+

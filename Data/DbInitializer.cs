@@ -62,7 +62,8 @@ namespace WebBase.Data
                     Email = "hai.tc21@gmail.com",
                     LockoutEnabled = false,
                     Status = (int)Enums.Status.Activied,
-                    Dob = DateTime.Parse("1995/12/21")
+                    Dob = DateTime.Parse("1995/12/21"),
+                    EmailConfirmed = true
                 }, "Admin@123");
                 if (result.Succeeded)
                 {
@@ -78,7 +79,8 @@ namespace WebBase.Data
                     Email = "tranhai21121995@gmail.com",
                     LockoutEnabled = false,
                     Status = (int)Enums.Status.Activied,
-                    Dob = DateTime.Parse("1995/12/21")
+                    Dob = DateTime.Parse("1995/12/21"),
+                    EmailConfirmed = true
                 }, "Member@123");
                 if (result2.Succeeded)
                 {

@@ -9,6 +9,8 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
+
 
 import { SystemsComponent } from './systems.component';
 import { FunctionsComponent } from './functions/functions.component';
@@ -17,6 +19,7 @@ import { RolesComponent } from './roles/roles.component';
 import { PermissionsComponent } from './permissions/permissions.component';
 import { RoleDetailComponent } from './roles/role-detail/role-detail.component';
 import { NotificationService } from '../../shared';
+
 
 
 @NgModule({
@@ -36,7 +39,8 @@ import { NotificationService } from '../../shared';
     NzButtonModule,
     NzModalModule,
     NzTableModule,
-    NzPaginationModule
+    NzPaginationModule,
+    NzLayoutModule
   ],
   providers: [
     NotificationService,
