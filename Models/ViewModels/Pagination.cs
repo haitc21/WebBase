@@ -4,7 +4,7 @@ namespace WebBase.Models.ViewModels
 {
     public class Pagination<T>
     {
-        public List<T> item { get; set; }
-        public int totalRecord { get; set; }
+        public List<T> items { get; set; }
+        public int totalRecords { get; set; }
     }
 }

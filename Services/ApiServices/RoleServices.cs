@@ -81,8 +81,8 @@ namespace WebBase.Services.ApiServices
                 query = query.Where(r => r.Name.ToLower().Contains(filter)
                 || r.Description.ToLower().Contains(filter));
             }
-            int totalRecord = query.Count();
-            var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize)
+            int totalRecords = query.Count();
+            var itemss = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize)
                  .Select(r => new RoleVM()
                  {
                      Id = r.Id,
@@ -91,8 +91,8 @@ namespace WebBase.Services.ApiServices
                  }).ToListAsync();
             var pagination = new Pagination<RoleVM>()
             {
-                item = items,
-                totalRecord = totalRecord
+                items = itemss,
+                totalRecords = totalRecords
             };
             return pagination;
         }

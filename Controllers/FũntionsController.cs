@@ -96,8 +96,8 @@ namespace WebBase.Controllers
 
             var pagination = new Pagination<FunctionVM>
             {
-                item = items,
-                totalRecord = totalRecords,
+                items = items,
+                totalRecords = totalRecords,
             };
             return Ok(pagination);
         }

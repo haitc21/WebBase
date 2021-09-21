@@ -58,7 +58,7 @@ namespace WebBase.Controllers
         public async Task<ActionResult> GetRole(string filter, int pageIndex = 1, int pageSize = 10)
         {
             var pagination = await _roleServices.GetRolePagging(filter, pageIndex, pageSize);
-            if (pagination.totalRecord == 0)
+            if (pagination.totalRecords == 0)
                 return NotFound(new ApiNotFoundResponse($"Can't found role wirh filter: {filter}"));
             return Ok(pagination);
         }

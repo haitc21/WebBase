@@ -72,7 +72,7 @@ namespace WebBase.Controllers
         public async Task<ActionResult> GetUser(string filter, int pageIndex = 1, int pageSize = 10)
         {
             var pagination = await _userService.GetUserPagging(filter, pageIndex, pageSize);
-            if (pagination.totalRecord == 0)
+            if (pagination.totalRecords == 0)
                 return NotFound(new ApiNotFoundResponse($"Can't found user with filter: {filter}!"));
             return Ok(pagination);
         }

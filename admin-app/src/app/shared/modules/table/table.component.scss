@@ -1,0 +1,13 @@
+.tblicon {
+    margin-right: 6px;
+    font-size: 18px;
+    color: rgb(91, 91, 233);
+  }
+  .tblicon:hover {
+    color: red;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .tbl-pagination {
+    justify-content: flex-end;
+}

@@ -72,8 +72,8 @@ namespace WebBase.Services.ApiServices
                  .Select(u => MapUserToVM(u)).ToListAsync();
             var pagination = new Pagination<UserVM>()
             {
-                item = items,
-                totalRecord = totalRecord
+                items = items,
+                totalRecords = totalRecord
             };
             return pagination;
         }
