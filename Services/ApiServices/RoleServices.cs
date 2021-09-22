@@ -82,7 +82,7 @@ namespace WebBase.Services.ApiServices
                 || r.Description.ToLower().Contains(filter));
             }
             int totalRecords = query.Count();
-            var itemss = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize)
+            var itemss = await query.OrderBy(x => x.Name).Skip((pageIndex - 1) * pageSize).Take(pageSize)
                  .Select(r => new RoleVM()
                  {
                      Id = r.Id,

@@ -3,8 +3,8 @@ import { NzTableSortFn, NzTableSortOrder } from 'ng-zorro-antd/table';
 
 // Định nghĩa ra 1 kiểu Dictionary
 // Nếu generic là mảng thì dùng ArrayDictionary không thì ObjectDictionary
-type ObjectDictionary<T> = { [key: string] : T }; // {foo: 'abc' , bar: "abcd"}
-type ArrayDictionary<T> = { [key: string] : T[] }; // {foo: [1,2,3] , bar:['s1','s2']}
+type ObjectDictionary<T> = { [key: string]: T }; // {foo: 'abc' , bar: "abcd"}
+type ArrayDictionary<T> = { [key: string]: T[] }; // {foo: [1,2,3] , bar:['s1','s2']}
 export type Dictionary<T> = T extends [] ? ArrayDictionary<T[any]> : ObjectDictionary<T>
 
 
@@ -18,6 +18,14 @@ export enum COL_DATA_TYPE {
   CURRENCY,
   DATE,
   ACTION
+}
+
+export enum ACTION_TYPE {
+  CREATE,
+  EDIT,
+  DELETE,
+  DETAILS,
+  APPROVE_ACTION
 }
 
 export type SortOrder = NzTableSortOrder;

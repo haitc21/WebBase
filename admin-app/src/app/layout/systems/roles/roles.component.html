@@ -15,11 +15,10 @@
             (pageIndexChange)="changePage($event)"
             (pageSizeChange)="changeSize($event)"
             [loading]="loading"
-            [actions]="['edit','delete']"
+            [actions]="[ACTION_TYPE.EDIT, ACTION_TYPE.DELETE]"
+            (actionEdit)="edit($event)"
             (actionDelete)="delete($event)"
-            (actionEdit)="delete($event)"
         >
-            <app-tbl-column header="ID" key="id"></app-tbl-column>
             <app-tbl-column header="Tên nhóm quyền" key="name"></app-tbl-column>
             <app-tbl-column header="Mô tả" key="description"></app-tbl-column>
             <app-tbl-column header="Tác vụ" [dataType]="COL_DATA_TYPE.ACTION"></app-tbl-column>
@@ -28,7 +27,7 @@
     <nz-footer> </nz-footer>
 </nz-layout>
 
-<section id="modalEdit">
+<<ng-container>
     <ng-template #editTitle>
         <span>Chỉnh sửa nhóm quyền</span>
     </ng-template>
@@ -39,8 +38,8 @@
     </ng-template>
     <ng-template #editFooter let-ref="modalRef">
         <button nz-button (click)="ref.destroy()">Đóng</button>
-        <button nz-button nzType="primary" (click)="destroyTplModal(ref)" [nzLoading]="tplModalButtonLoading">
+        <button nz-button nzType="primary" (click)="destroyTplModal(ref)" [nzLoading]="loading">
             Lưu
         </button>
     </ng-template>
-</section>
+</ng-container>

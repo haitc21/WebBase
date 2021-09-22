@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { Subscription } from 'rxjs';
-import { COL_DATA_TYPE, Dictionary, MessageConstants, NotificationService, PaginationModel, RoleModel, RoleService } from './../../../shared';
+import { ACTION_TYPE, COL_DATA_TYPE, Dictionary, MessageConstants, NotificationService, PaginationModel, RoleModel, RoleService } from './../../../shared';
 
 @Component({
   selector: 'app-roles',
@@ -11,22 +11,24 @@ import { COL_DATA_TYPE, Dictionary, MessageConstants, NotificationService, Pagin
 
 export class RolesComponent implements OnInit, OnDestroy {
   private subscription = new Subscription();
-  // Default
   public loading = false;
-  /**
-   * Paging
-   */
   public pageIndex = 1;
   public pageSize = 10;
   public totalRecords: number;
   public keyword = '';
   COL_DATA_TYPE = COL_DATA_TYPE;
+  ACTION_TYPE = ACTION_TYPE;
   // Role
   public roles: Dictionary<any>[] = [];
 
   // Modal
   tplModalButtonLoading = false;
   disabled = false;
+
+  
+  @ViewChild('editTitle') editTitleTpl!: TemplateRef<any>;
+  @ViewChild('editContent') editContentTpl!: TemplateRef<any>;
+  @ViewChild('editFooter') editFooterTpl!: TemplateRef<any>;
 
   constructor(private rolesService: RoleService,
     private notificationService: NotificationService,
@@ -77,8 +79,9 @@ export class RolesComponent implements OnInit, OnDestroy {
       setTimeout(() => { this.loading = false; }, 1000);
     }));
   }
-  editItem(entity: any) {
+  edit(entity: RoleModel) {
     console.log(entity);
+    this.createTplModal(this.editTitleTpl, this.editContentTpl, this.editFooterTpl, entity);
   }
   createTplModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, entity: any | null): void {
     this.modal.create({
