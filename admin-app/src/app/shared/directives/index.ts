@@ -1,3 +1,3 @@
-export * from './cell.directive';
-export * from './column.directive';
-export * from './header.directive';
+export * from './tbl-cell.directive';
+export * from './tbl-column.directive';
+export * from './tbl-header.directive';

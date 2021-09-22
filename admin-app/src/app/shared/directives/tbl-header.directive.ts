@@ -1,11 +1,10 @@
 import { Directive, TemplateRef } from '@angular/core';
 
 @Directive({
-  selector: '[appCell]'
+  selector: '[appTblHeader]'
 })
-export class CellDirective {
+export class TblHeaderDirective {
   constructor(
     public template: TemplateRef<any>
   ) { }
-
 }

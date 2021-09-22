@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableComponent } from './table.component';
-import { CellDirective, ColumnDirective, HeaderDirective } from '../../directives';
+import { TblCellDirective, TblColumnDirective, TblHeaderDirective } from '../../directives';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { FormsModule } from '@angular/forms';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -16,15 +17,15 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
   ],
   declarations: [
     TableComponent,
-    ColumnDirective,
-    CellDirective,
-    HeaderDirective
+    TblColumnDirective,
+    TblCellDirective,
+    TblHeaderDirective
   ],
   exports: [
     TableComponent,
-    ColumnDirective,
-    CellDirective,
-    HeaderDirective
+    TblColumnDirective,
+    TblCellDirective,
+    TblHeaderDirective
   ]
 })
 export class TableModule { }

@@ -15,11 +15,14 @@
             (pageIndexChange)="changePage($event)"
             (pageSizeChange)="changeSize($event)"
             [loading]="loading"
+            [actions]="['edit','delete']"
+            (actionDelete)="delete($event)"
+            (actionEdit)="delete($event)"
         >
-            <app-column header="ID" key="id"></app-column>
-            <app-column header="Tên nhóm quyền" key="name"></app-column>
-            <app-column header="Mô tả" key="description"></app-column>
-            <app-column header="Tác vụ" [dataType]="COL_DATA_TYPE.ACTION"></app-column>
+            <app-tbl-column header="ID" key="id"></app-tbl-column>
+            <app-tbl-column header="Tên nhóm quyền" key="name"></app-tbl-column>
+            <app-tbl-column header="Mô tả" key="description"></app-tbl-column>
+            <app-tbl-column header="Tác vụ" [dataType]="COL_DATA_TYPE.ACTION"></app-tbl-column>
         </app-table>
     </nz-content>
     <nz-footer> </nz-footer>

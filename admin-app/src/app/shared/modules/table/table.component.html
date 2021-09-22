@@ -11,7 +11,6 @@
     (nzPageIndexChange)="pageIndexChange.emit($event)"
     (nzPageSizeChange)="pageSizeChange.emit($event)"
     [nzShowQuickJumper]="true"
-    [nzResponsive]="true"
     [nzItemRender]="renderItemTemplate"
     [nzShowTotal]="totalTemplate"
     [nzLoadingIndicator]="loadingSpin"
@@ -48,9 +47,10 @@
                             {{ data[column.key] | date: 'dd/MM/yyyy' }}
                         </ng-container>
                         <ng-container *ngSwitchCase="COL_DATA_TYPE.ACTION">
-                            <I class="fa fa-info tblicon" title="Xem chi tiết" (click)="view(data)"></I>
-                            <I class="fa fa-edit tblicon" title="Sửa" (click)="edit(data)"></I>
-                            <I class="fa fa-trash tblicon" title="Xóa" (click)="delete(data)"></I>
+                            <I *ngIf="actions.includes('details')" class="fa fa-info tblicon" title="Xem chi tiết" (click)="details(data)"></I>
+                            <I *ngIf="actions.includes('edit')" class="fa fa-edit tblicon" title="Sửa" (click)="edit(data)"></I>
+                            <I *ngIf="actions.includes('delete')" class="fa fa-trash tblicon" title="Xóa" (click)="delete(data)"></I>
+                            <I *ngIf="actions.includes('approve')" class="fa fa-check tblicon" title="Phê duyệt" (click)="approve(data)"></I>
                         </ng-container>
                         <ng-container *ngSwitchDefault>
                             {{ data[column.key] }}

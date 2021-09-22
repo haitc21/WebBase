@@ -1,12 +1,13 @@
 import { ContentChild, Directive, EventEmitter, Input, Output } from '@angular/core';
 import { COL_DATA_TYPE, SortFunc, SortOrder } from '../types';
-import { CellDirective } from './cell.directive';
-import { HeaderDirective } from './header.directive';
+import { TblCellDirective } from './tbl-cell.directive';
+import { TblHeaderDirective } from './tbl-header.directive';
 
 @Directive({
-  selector: 'app-column'
+  selector: 'app-tbl-column'
 })
-export class ColumnDirective {
+
+export class TblColumnDirective {
   @Input() header = '';
   @Input() key = '';
   @Input() renderKey = '';
@@ -16,8 +17,8 @@ export class ColumnDirective {
   @Input() sortFn: SortFunc | null = null;
   @Output() sortChange = new EventEmitter<{ key: string, order: SortOrder }>();
 
-  @ContentChild(CellDirective, { static: true }) tplCell?: CellDirective;
-  @ContentChild(HeaderDirective, { static: true }) tplHeader?: HeaderDirective;
+  @ContentChild(TblCellDirective, { static: true }) tplCell?: TblCellDirective;
+  @ContentChild(TblHeaderDirective, { static: true }) tplHeader?: TblHeaderDirective;
 
   constructor() { }
 }

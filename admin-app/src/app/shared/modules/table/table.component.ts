@@ -1,5 +1,5 @@
 import { Component, ContentChildren, EventEmitter, Input, OnChanges, OnInit, Output, QueryList, SimpleChanges } from '@angular/core';
-import { ColumnDirective } from '../../directives';
+import { TblColumnDirective } from '../../directives';
 import { COL_DATA_TYPE, Dictionary } from '../../types';
 
 @Component({
@@ -18,11 +18,17 @@ export class TableComponent implements OnInit, OnChanges {
   @Input() pageIndex = 1;
   @Input() pageSize = 10;
   @Input() totalRecords = 0;
+  @Input() actions: string[] = [];
 
   @Output() pageIndexChange = new EventEmitter<number>();
   @Output() pageSizeChange = new EventEmitter<number>();
 
-  @ContentChildren(ColumnDirective) columns!: QueryList<ColumnDirective>;
+  @Output() actionDetails = new EventEmitter<Dictionary<any>>();
+  @Output() actionEdit = new EventEmitter<Dictionary<any>>();
+  @Output() actionDelete = new EventEmitter<Dictionary<any>>();
+  @Output() actionApprove = new EventEmitter<Dictionary<any>>();
+
+  @ContentChildren(TblColumnDirective) columns!: QueryList<TblColumnDirective>;
 
 
   constructor() { }
@@ -33,13 +39,16 @@ export class TableComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
   }
-  view(entity: any) {
-    console.log(entity);
-  }
-  delete(entity: any) {
-    console.log(entity);
+  details(entity: any) {
+    this.actionDetails.emit(entity);
   }
   edit(entity: any) {
-    console.log(entity);
+    this.actionEdit.emit(entity);
+  }
+  delete(entity: any) {
+    this.actionDelete.emit(entity);
+  }
+  approve(entity: any) {
+    this.actionApprove.emit(entity);
   }
 }

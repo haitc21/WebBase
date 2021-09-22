@@ -61,12 +61,12 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.pageSize = value;
     this.loadData();
   }
-  deleteItem(id: string) {
-    console.log(id);
+  delete(entity: RoleModel) {
+    console.log(entity);
     this.notificationService.showConfirmation(MessageConstants.CONFIRM_DELETE_MSG,
-      () => this.deleteItemsConfirm(id));
+      () => this.deleteConfirm(entity.id));
   }
-  deleteItemsConfirm(id: string) {
+  deleteConfirm(id: string) {
     this.loading = true;
     this.subscription.add(this.rolesService.delete(id).subscribe(() => {
       this.notificationService.showSuccess(MessageConstants.DELETED_OK_MSG);
