@@ -9,7 +9,7 @@ namespace WebBase.Services.Interfaces
 {
     public interface IRoleServices
     {
-        Task<IdentityResult> CreateRole(RolsCreateModel roleCM, string id);
+        Task<IdentityResult> CreateRole(RoleCreateModel roleCM, string id);
 
         Task<List<RoleVM>> GetAllRoles();
 
@@ -17,7 +17,7 @@ namespace WebBase.Services.Interfaces
 
         Task<RoleVM> GetRoleById(string id);
 
-        Task<IdentityResult> UpdateRole(AppRole role, RoleVM roleVM);
+        Task<IdentityResult> UpdateRole(AppRole role, RoleUpdateModel roleUM);
 
         Task<AppRole> FindById(string id);
 

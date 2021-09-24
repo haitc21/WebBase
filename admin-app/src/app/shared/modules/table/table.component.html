@@ -55,7 +55,7 @@
                                 (click)="details(data)"
                             ></I>
                             <I
-                                *ngIf="actions.includes(ACTION_TYPE.EDIT)"
+                                *ngIf="actions.includes(ACTION_TYPE.UPDATE)"
                                 class="fa fa-edit tblicon"
                                 title="Sửa"
                                 (click)="edit(data)"
@@ -82,7 +82,7 @@
         </tr>
     </tbody>
 </nz-table>
-<ng-template #totalTemplate let-total>{{ totalPages }} trang</ng-template>
+<ng-template #totalTemplate let-total>{{ totalPages }} trang, {{ total }} bản ghi </ng-template>
 <ng-template #renderItemTemplate let-type let-page="page">
     <ng-container [ngSwitch]="type">
         <a *ngSwitchCase="'page'">{{ page }}</a>

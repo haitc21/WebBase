@@ -1,6 +1,6 @@
 export class RoleModel
 {
-    id: string;
+    id: string | null;
     name: string;
     description: string;
 }

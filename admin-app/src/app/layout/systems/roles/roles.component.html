@@ -1,9 +1,9 @@
 <p>Danh sách nhóm quyền</p>
 <nz-layout>
     <nz-header>
-        <button nz-button nzType="primary" (click)="createTplModal(editTitle, editContent, editFooter)">
+        <button nz-button nzType="primary" (click)="createTplModal(createTitle, modalContent, createFooter)">
             <span>Thêm</span>
-        </button>
+        </button>   
     </nz-header>
     <nz-content>
         <app-table
@@ -15,8 +15,8 @@
             (pageIndexChange)="changePage($event)"
             (pageSizeChange)="changeSize($event)"
             [loading]="loading"
-            [actions]="[ACTION_TYPE.EDIT, ACTION_TYPE.DELETE]"
-            (actionEdit)="edit($event)"
+            [actions]="[ACTION_TYPE.UPDATE, ACTION_TYPE.DELETE]"
+            (actionEdit)="update($event)"
             (actionDelete)="delete($event)"
         >
             <app-tbl-column header="Tên nhóm quyền" key="name"></app-tbl-column>
@@ -28,17 +28,84 @@
 </nz-layout>
 
 <<ng-container>
-    <ng-template #editTitle>
-        <span>Chỉnh sửa nhóm quyền</span>
+    <ng-template #closeIcon>
+        <i class="fa fa-times-circle" style="font-size: 30px;"></i>
     </ng-template>
-    <ng-template #editContent let-params>
-        <p>some contents...</p>
-        <p>some contents...</p>
-        <p>{{ params.value | json }}</p>
+    <ng-template #editTitle>
+        <h3>Chỉnh sửa nhóm quyền</h3>
+    </ng-template>
+    <ng-template #modalContent let-params>
+        <form nz-form [formGroup]="form">
+            <div class="alert alert-danger" role="alert" *ngIf="errorMsg">
+                {{ errorMsg }}
+            </div>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6">Tên nhóm quyền</nz-form-label>
+                <nz-form-control
+                    [nzSpan]="14"
+                    [nzValidateStatus]="name?.errors ? 'error' : 'success'"
+                    nzHasFeedback
+                    [nzErrorTip]="nameErrorTpl"
+                >
+                    <input nz-input type="tẽt" formControlName="name" />
+                </nz-form-control>
+                <ng-template #nameErrorTpl>
+                    <app-validation-msg
+                        [entityForm]="form"
+                        fieldName="name"
+                        [validationMessages]="validation_messages"
+                    ></app-validation-msg>
+                </ng-template>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6">Mô tả</nz-form-label>
+                <nz-form-control
+                    [nzSpan]="14"
+                    [nzValidateStatus]="description?.errors ? 'error' : 'success'"
+                    nzHasFeedback
+                    [nzErrorTip]="descriptionErrorTpl"
+                >
+                    <input nz-input formControlName="description" />
+                </nz-form-control>
+                <ng-template #descriptionErrorTpl>
+                    <app-validation-msg
+                        [entityForm]="form"
+                        fieldName="description"
+                        [validationMessages]="validation_messages"
+                    ></app-validation-msg>
+                </ng-template>
+            </nz-form-item>
+        </form>
     </ng-template>
     <ng-template #editFooter let-ref="modalRef">
-        <button nz-button (click)="ref.destroy()">Đóng</button>
-        <button nz-button nzType="primary" (click)="destroyTplModal(ref)" [nzLoading]="loading">
+        <button nz-button (click)="ref.destroy(); form.reset();">Đóng</button>
+        <button
+            type="submit"
+            [disabled]="form.invalid"
+            nz-button
+            nzType="primary"
+            (click)="saveChange(ref, ACTION_TYPE.UPDATE)"
+            [nzLoading]="tplModalButtonLoading"
+        >
+            Lưu
+        </button>
+    </ng-template>
+</ng-container>
+
+<ng-container>
+    <ng-template #createTitle>
+        <h3>Thêm nhóm quyền</h3>
+    </ng-template>
+    <ng-template #createFooter let-ref="modalRef">
+        <button nz-button (click)="ref.destroy(); form.reset();">Đóng</button>
+        <button
+            type="submit"
+            [disabled]="form.invalid"
+            nz-button
+            nzType="primary"
+            (click)="saveChange(ref, ACTION_TYPE.CREATE)"
+            [nzLoading]="tplModalButtonLoading"
+        >
             Lưu
         </button>
     </ng-template>

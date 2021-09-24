@@ -19,7 +19,7 @@ namespace WebBase.Services.ApiServices
             _roleManager = roleManager;
         }
 
-        public async Task<IdentityResult> CreateRole(RolsCreateModel roleCM, string id)
+        public async Task<IdentityResult> CreateRole(RoleCreateModel roleCM, string id)
         {
             var role = new AppRole()
             {
@@ -101,13 +101,13 @@ namespace WebBase.Services.ApiServices
         /// -2 not found, 0 update fall, 1 Succeeded
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="roleVM"></param>
+        /// <param name="roleUM"></param>
         /// <returns></returns>
-        public async Task<IdentityResult> UpdateRole(AppRole role, RoleVM roleVM)
+        public async Task<IdentityResult> UpdateRole(AppRole role, RoleUpdateModel roleUM)
         {
-            role.Name = roleVM.Name;
-            role.Description = roleVM.Description;
-            role.NormalizedName = roleVM.Name.ToUpper();
+            role.Name = roleUM.Name;
+            role.Description = roleUM.Description;
+            role.NormalizedName = roleUM.Name.ToUpper();
             var rel = await _roleManager.UpdateAsync(role);
             return rel;
         }

@@ -31,7 +31,7 @@ namespace WebBase.Controllers
         [HttpPost]
         [ClaimRequirement(FunctionCode.SYSTEM_ROLE, CommandCode.CREATE)]
         [ApiValidationFilter]
-        public async Task<ActionResult> PostRole(RolsCreateModel roleCM)
+        public async Task<ActionResult> PostRole(RoleCreateModel roleCM)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new ApiBadRequestResponse("Modelstate invalid!"));
@@ -76,17 +76,17 @@ namespace WebBase.Controllers
         [HttpPut("{id}")]
         [ClaimRequirement(FunctionCode.SYSTEM_ROLE, CommandCode.UPDATE)]
         [ApiValidationFilter]
-        public async Task<ActionResult> PutTole(string id, [FromBody] RoleVM roleVM)
+        public async Task<ActionResult> PutTole(string id, [FromBody] RoleUpdateModel roleUM)
         {
-            if (id != roleVM.Id.ToString())
+            if (id != roleUM.Id.ToString())
                 return BadRequest(new ApiBadRequestResponse("Role id from url diffirent role id from body!"));
             var role = await _roleServices.FindById(id);
             if (role == null)
                 return NotFound(new ApiNotFoundResponse($"Role id {id} not exsited!"));
-            var rel = await _roleServices.UpdateRole(role, roleVM);
+            var rel = await _roleServices.UpdateRole(role, roleUM);
             if (rel.Succeeded)
             {
-                return NoContent();
+                return Ok(roleUM);
             }
             return BadRequest(new ApiBadRequestResponse(rel));
         }

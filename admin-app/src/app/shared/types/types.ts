@@ -22,10 +22,10 @@ export enum COL_DATA_TYPE {
 
 export enum ACTION_TYPE {
   CREATE,
-  EDIT,
+  UPDATE,
   DELETE,
   DETAILS,
-  APPROVE_ACTION
+  APPROVE
 }
 
 export type SortOrder = NzTableSortOrder;

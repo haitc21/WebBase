@@ -1,0 +1,7 @@
+<ng-container *ngIf="entityForm.get(fieldName).invalid && entityForm.get(fieldName).touched">
+    <ng-container *ngFor="let validation of validationMessages[fieldName]">
+        <div class="alert alert-danger" role="alert" *ngIf="entityForm.get(fieldName).errors[validation.type]">
+            {{ validation.message }}
+        </div>
+    </ng-container>
+</ng-container>

@@ -7,17 +7,17 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 // ant design
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
-
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzInputModule } from 'ng-zorro-antd/input';
 
 import { SystemsComponent } from './systems.component';
 import { FunctionsComponent } from './functions/functions.component';
 import { UsersComponent } from './users/users.component';
 import { RolesComponent } from './roles/roles.component';
 import { PermissionsComponent } from './permissions/permissions.component';
-import {  NotificationService, TableModule } from '../../shared';
-import { FormsModule } from '@angular/forms';
+import {  NotificationService, TableModule, ValidationMsgModule } from '../../shared';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -35,11 +35,14 @@ import { FormsModule } from '@angular/forms';
     SystemsRoutingModule,
     TranslateModule,
     NgbDropdownModule,
+    TableModule,
     NzButtonModule,
     NzModalModule,
-    NzPaginationModule,
     NzLayoutModule,
-    TableModule
+    NzFormModule,
+    NzInputModule,
+    ReactiveFormsModule,
+    ValidationMsgModule
   ],
   providers: [
     NotificationService,
