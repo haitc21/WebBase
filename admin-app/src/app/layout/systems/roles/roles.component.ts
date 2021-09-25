@@ -25,7 +25,6 @@ export class RolesComponent implements OnInit, OnDestroy {
   // Modal
   tplModalButtonLoading = false;
   disabled = false;
-  onCancelmodal = new EventEmitter();
 
   // Form
   form!: FormGroup;
@@ -67,7 +66,7 @@ export class RolesComponent implements OnInit, OnDestroy {
       name: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(25)]],
       description: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
     });
-    
+
   }
 
   loadData() {
@@ -118,6 +117,14 @@ export class RolesComponent implements OnInit, OnDestroy {
     });
     this.createTplModal(this.editTitleTpl, this.modalContentTpl, this.editFooterTpl, entity);
   }
+  resetValueForm() {
+    console.log('resetValueForm');
+    this.form.patchValue({
+      id: [''],
+      name: [''],
+      description: [''],
+    });
+  }
   createTplModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, entity: any | null): void {
     this.modal.create({
       nzTitle: tplTitle,
@@ -129,7 +136,14 @@ export class RolesComponent implements OnInit, OnDestroy {
       },
       nzWidth: 700,
       nzCloseIcon: this.closeIconTpl,
-      nzOnCancel: this.onCancelmodal
+      nzOnOk: () => {
+        this.resetValueForm();
+        console.log('ok');
+      },
+      nzOnCancel: () => {
+        this.resetValueForm();
+        console.log('cancel');
+      }
     });
   }
   saveChange(modelRef: NzModalRef, action: number): void {
@@ -141,33 +155,34 @@ export class RolesComponent implements OnInit, OnDestroy {
         this.rolesService.update(this.form.value.id, this.form.value)
           .subscribe(() => {
             this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
+            this.resetValueForm();
             this.tplModalButtonLoading = false;
             modelRef.destroy();
             this.loadData();
           }, error => {
-            this.errorMsg = error.replace('<br/>','');
+            this.errorMsg = error.replace('<br/>', '');
             this.tplModalButtonLoading = false;
-            setTimeout(() => { this.errorMsg = null; }, 3000);
+            setTimeout(() => { this.errorMsg = null; }, 5000);
           })
       );
     }
-  else  if (action === this.ACTION_TYPE.CREATE) {
+    else if (action === this.ACTION_TYPE.CREATE) {
       console.log('CREATE');
       this.subscription.add(
         this.rolesService.add(this.form.value)
           .subscribe(() => {
             this.notificationService.showSuccess(MessageConstants.CREATED_OK_MSG);
+            this.resetValueForm();
             this.tplModalButtonLoading = false;
             modelRef.destroy();
             this.loadData();
           }, error => {
-            this.errorMsg = error.replace('<br/>','');
+            this.errorMsg = error.replace('<br/>', '');
             this.tplModalButtonLoading = false;
-            setTimeout(() => { this.errorMsg = null; }, 3000);
+            setTimeout(() => { this.errorMsg = null; }, 5000);
           })
       );
     }
-    this.form.reset();
   }
 
   ngOnDestroy(): void {

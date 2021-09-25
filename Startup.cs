@@ -101,7 +101,7 @@ namespace WebBase
 
             //dang ki tat ca class cung kieu
             services.AddControllersWithViews()
-                    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RolsCreateValid>());
+                    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RoleCreateValid>());
 
             services.AddAuthentication()
                 .AddGoogle(options =>
