@@ -1,9 +1,5 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using WebBase.Data.Entities;
 using WebBase.Models.RequestModels;
 
@@ -12,6 +8,7 @@ namespace WebBase.Models.Validations
     public class RoleCreateValid : AbstractValidator<RoleCreateModel>
     {
         private readonly RoleManager<AppRole> _roleManager;
+
         public RoleCreateValid(RoleManager<AppRole> roleManager)
         {
             _roleManager = roleManager;
@@ -26,13 +23,13 @@ namespace WebBase.Models.Validations
 
         /// <summary>
         /// true thì pass qua must
-        /// flase thì trả về msg 
+        /// flase thì trả về msg
         /// </summary>
         /// <param name="newValue"></param>
         /// <returns></returns>
         public bool IsNameUnique(string newValue)
         {
-            var result =  _roleManager.FindByNameAsync(newValue).Result;
+            var result = _roleManager.FindByNameAsync(newValue).Result;
             if (result == null)
                 return true;
             return false;
@@ -42,6 +39,7 @@ namespace WebBase.Models.Validations
     public class RoleUpdateValid : AbstractValidator<RoleUpdateModel>
     {
         private readonly RoleManager<AppRole> _roleManager;
+
         public RoleUpdateValid(RoleManager<AppRole> roleManager)
         {
             _roleManager = roleManager;
@@ -53,6 +51,7 @@ namespace WebBase.Models.Validations
                 .MaximumLength(250).WithMessage("Mô tả nhóm quyền có tối đa 250 ký tự!")
                 .MinimumLength(5).WithMessage("Mô tả nhóm quyền có ít nhất 5 ký tự");
         }
+
         public bool IsNameUpdateUnique(RoleUpdateModel entity, string newValue)
         {
             var result = _roleManager.FindByIdAsync(entity.Id).Result;

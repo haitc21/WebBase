@@ -1,9 +1,21 @@
 <p>Danh sách nhóm quyền</p>
 <nz-layout>
     <nz-header>
-        <button nz-button nzType="primary" (click)="createTplModal(createTitle, modalContent, createFooter)">
-            <span>Thêm</span>
-        </button>   
+        <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+            <div nz-col nzSpan="18">
+                <button nz-button nzType="primary" (click)="createTplModal(createTitle, modalContent, createFooter)">
+                    <span>Thêm</span>
+                </button>
+            </div>
+            <div nz-col nzSpan="6">
+                <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+                    <input (keyup.enter)="loadData()" type="text" [(ngModel)]="keyword" nz-input placeholder="Tên nhóm quyền" />
+                </nz-input-group>
+                <ng-template #suffixIconButton>
+                    <button (click)="loadData()" nz-button nzType="primary" nzSearch><i nz-icon nzType="search"></i></button>
+                </ng-template>
+            </div>
+        </div>
     </nz-header>
     <nz-content>
         <app-table
@@ -78,7 +90,7 @@
         </form>
     </ng-template>
     <ng-template #editFooter let-ref="modalRef">
-        <button nz-button (click)="ref.destroy(); form.reset();">Đóng</button>
+        <button nz-button (click)="ref.destroy(); form.reset()">Đóng</button>
         <button
             type="submit"
             [disabled]="form.invalid"
@@ -97,7 +109,7 @@
         <h3>Thêm nhóm quyền</h3>
     </ng-template>
     <ng-template #createFooter let-ref="modalRef">
-        <button nz-button (click)="ref.destroy(); form.reset();">Đóng</button>
+        <button nz-button (click)="ref.destroy(); form.reset()">Đóng</button>
         <button
             type="submit"
             [disabled]="form.invalid"

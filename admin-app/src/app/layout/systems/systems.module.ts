@@ -10,6 +10,8 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+
 
 import { SystemsComponent } from './systems.component';
 import { FunctionsComponent } from './functions/functions.component';
@@ -42,7 +44,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     NzFormModule,
     NzInputModule,
     ReactiveFormsModule,
-    ValidationMsgModule
+    ValidationMsgModule,
+    NzIconModule
   ],
   providers: [
     NotificationService,
