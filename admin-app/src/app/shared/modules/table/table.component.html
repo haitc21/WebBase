@@ -35,7 +35,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let data of table.data">
+        <tr *ngFor="let data of table.data; let count = index">
             <td *ngFor="let column of columns">
                 <ng-container *ngIf="column.tplCell">
                     <ng-container
@@ -44,30 +44,45 @@
                 </ng-container>
                 <ng-container *ngIf="!column.tplCell">
                     <ng-container [ngSwitch]="column.dataType">
+                        <ng-container *ngSwitchCase="COL_DATA_TYPE.COUNT">
+                            <p style="text-align: center;">{{ count + 1 + (pageIndex - 1) * pageSize }}</p>
+                        </ng-container>
                         <ng-container *ngSwitchCase="COL_DATA_TYPE.DATE">
                             {{ data[column.key] | date: 'dd/MM/yyyy' }}
                         </ng-container>
                         <ng-container *ngSwitchCase="COL_DATA_TYPE.ACTION">
                             <I
                                 *ngIf="actions.includes(ACTION_TYPE.DETAILS)"
+                                appPermission
+                                [appFunction]="functionName"
+                                appAction="DETAILS"
                                 class="fa fa-info tblicon"
                                 title="Xem chi tiết"
                                 (click)="details(data)"
                             ></I>
                             <I
                                 *ngIf="actions.includes(ACTION_TYPE.UPDATE)"
+                                appPermission
+                                [appFunction]="functionName"
+                                appAction="UPDATE"
                                 class="fa fa-edit tblicon"
                                 title="Sửa"
                                 (click)="edit(data)"
                             ></I>
                             <I
                                 *ngIf="actions.includes(ACTION_TYPE.DELETE)"
+                                appPermission
+                                [appFunction]="functionName"
+                                appAction="DELETE"
                                 class="fa fa-trash tblicon"
                                 title="Xóa"
                                 (click)="delete(data)"
                             ></I>
                             <I
                                 *ngIf="actions.includes(ACTION_TYPE.APPROVE)"
+                                appPermission
+                                [appFunction]="functionName"
+                                appAction="APPROVE"
                                 class="fa fa-check tblicon"
                                 title="Phê duyệt"
                                 (click)="approve(data)"

@@ -17,7 +17,8 @@ export enum COL_DATA_TYPE {
   NUMBER,
   CURRENCY,
   DATE,
-  ACTION
+  ACTION,
+  COUNT
 }
 
 export enum ACTION_TYPE {

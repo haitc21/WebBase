@@ -1,4 +1,5 @@
 import { Component, ContentChildren, EventEmitter, Input, OnChanges, OnInit, Output, QueryList, SimpleChanges } from '@angular/core';
+import { Console } from 'console';
 import { TblColumnDirective } from '../../directives';
 import { ACTION_TYPE, COL_DATA_TYPE, Dictionary } from '../../types';
 
@@ -10,6 +11,7 @@ import { ACTION_TYPE, COL_DATA_TYPE, Dictionary } from '../../types';
 export class TableComponent implements OnInit, OnChanges {
 
   totalPages = 10;
+  count = 0;
   COL_DATA_TYPE = COL_DATA_TYPE;
   ACTION_TYPE = ACTION_TYPE;
 
@@ -20,6 +22,8 @@ export class TableComponent implements OnInit, OnChanges {
   @Input() pageSize = 10;
   @Input() totalRecords = 0;
   @Input() actions: number[] = [];
+  @Input() functionName: string = '';
+
 
   @Output() pageIndexChange = new EventEmitter<number>();
   @Output() pageSizeChange = new EventEmitter<number>();

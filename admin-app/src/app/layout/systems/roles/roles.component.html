@@ -9,10 +9,18 @@
             </div>
             <div nz-col nzSpan="6">
                 <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
-                    <input (keyup.enter)="loadData()" type="text" [(ngModel)]="keyword" nz-input placeholder="Tên nhóm quyền" />
+                    <input
+                        (keyup.enter)="search()"
+                        type="text"
+                        [(ngModel)]="keyword"
+                        nz-input
+                        placeholder="Tên nhóm quyền"
+                    />
                 </nz-input-group>
                 <ng-template #suffixIconButton>
-                    <button (click)="loadData()" nz-button nzType="primary" nzSearch><i nz-icon nzType="search"></i></button>
+                    <button (click)="search()" nz-button nzType="primary" nzSearch>
+                        <i nz-icon nzType="search"></i>
+                    </button>
                 </ng-template>
             </div>
         </div>
@@ -28,9 +36,11 @@
             (pageSizeChange)="changeSize($event)"
             [loading]="loading"
             [actions]="[ACTION_TYPE.UPDATE, ACTION_TYPE.DELETE]"
+            [functionName]="'SYSTEM_ROLE'"
             (actionEdit)="update($event)"
             (actionDelete)="delete($event)"
         >
+            <app-tbl-column header="STT" [dataType]="COL_DATA_TYPE.COUNT"></app-tbl-column>
             <app-tbl-column header="Tên nhóm quyền" key="name"></app-tbl-column>
             <app-tbl-column header="Mô tả" key="description"></app-tbl-column>
             <app-tbl-column header="Tác vụ" [dataType]="COL_DATA_TYPE.ACTION"></app-tbl-column>

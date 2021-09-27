@@ -87,6 +87,11 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.totalRecords = response.totalRecords;
   }
 
+  search() {
+    this.pageIndex = 1;
+    this.loadData();
+  }
+
   changePage(value: any) {
     this.pageIndex = value;
     this.loadData();
