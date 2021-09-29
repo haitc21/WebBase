@@ -5,7 +5,10 @@ import { DashboardComponent } from './dashboard.component';
 const routes: Routes = [
     {
         path: '',
-        component: DashboardComponent
+        component: DashboardComponent,
+        data: {
+            customBreadcrumb: 'Bảng tin'
+        }
     }
 ];
 
@@ -13,4 +16,4 @@ const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule]
 })
-export class DashboardRoutingModule {}
+export class DashboardRoutingModule { }

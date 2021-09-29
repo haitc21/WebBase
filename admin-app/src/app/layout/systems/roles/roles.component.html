@@ -1,4 +1,6 @@
-<p>Danh sách nhóm quyền</p>
+<nz-breadcrumb [nzAutoGenerate]="true" [nzRouteLabel]="'customBreadcrumb'" [nzSeparator]="iconBreadcrumb"></nz-breadcrumb>
+<ng-template #iconBreadcrumb><i class="fa fa-arrow-right"></i></ng-template>
+
 <nz-layout>
     <nz-header>
         <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32 }">
@@ -69,7 +71,7 @@
                     nzHasFeedback
                     [nzErrorTip]="nameErrorTpl"
                 >
-                    <input nz-input type="tẽt" formControlName="name" />
+                    <input nz-input type="text" formControlName="name" />
                 </nz-form-control>
                 <ng-template #nameErrorTpl>
                     <app-validation-msg

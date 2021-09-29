@@ -76,7 +76,7 @@ namespace WebBase.Controllers
         [HttpPut("{id}")]
         [ClaimRequirement(FunctionCode.SYSTEM_ROLE, CommandCode.UPDATE)]
         [ApiValidationFilter]
-        public async Task<ActionResult> PutTole(string id, [FromBody] RoleUpdateModel roleUM)
+        public async Task<ActionResult> PutRole(string id, [FromBody] RoleUpdateModel roleUM)
         {
             if (id != roleUM.Id.ToString())
                 return BadRequest(new ApiBadRequestResponse("Role id from url diffirent role id from body!"));

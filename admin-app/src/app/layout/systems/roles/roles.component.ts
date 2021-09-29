@@ -24,7 +24,6 @@ export class RolesComponent implements OnInit, OnDestroy {
 
   // Modal
   tplModalButtonLoading = false;
-  disabled = false;
 
   // Form
   form!: FormGroup;
@@ -73,18 +72,13 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.subscription.add(this.rolesService.getAllPaging(this.keyword, this.pageIndex, this.pageSize)
       .subscribe((response: PaginationModel<RoleModel>) => {
-        this.processLoadData(response);
+        this.roles = response.items;
+        this.totalRecords = response.totalRecords;
         this.loading = false;
       }, error => {
         this.loading = false;
         this.notificationService.showError(error);
       }));
-  }
-  private processLoadData(response: PaginationModel<RoleModel>) {
-    this.roles = response.items;
-    this.pageIndex = this.pageIndex;
-    this.pageSize = this.pageSize;
-    this.totalRecords = response.totalRecords;
   }
 
   search() {

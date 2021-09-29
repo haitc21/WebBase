@@ -38,7 +38,7 @@ namespace WebBase.Services.Extensions
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            var sub = context.Subject.GetSubjectId();
+            var sub = context.Subject.GetSubjectId(); // chinhs là user id
             var user = await _userManager.FindByIdAsync(sub);
             if (user == null)
             {

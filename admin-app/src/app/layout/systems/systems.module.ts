@@ -11,6 +11,8 @@ import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker'
+import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 
 
 import { SystemsComponent } from './systems.component';
@@ -45,7 +47,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     NzInputModule,
     ReactiveFormsModule,
     ValidationMsgModule,
-    NzIconModule
+    NzIconModule,
+    NzDatePickerModule,
+    NzBreadCrumbModule
   ],
   providers: [
     NotificationService,

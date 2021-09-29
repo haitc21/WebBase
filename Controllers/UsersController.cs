@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using WebBase.Common;
+using WebBase.Data.Entities;
 using WebBase.Helpers;
 using WebBase.Helpers.Authorization;
 using WebBase.Models.RequestModels;
@@ -15,12 +19,15 @@ namespace WebBase.Controllers
     {
         private readonly IUserService _userService;
         private readonly ILogger<UsersController> _logger;
+        private readonly UserManager<AppUser> _userManager;
 
         public UsersController(IUserService userService,
-            ILogger<UsersController> logger)
+            ILogger<UsersController> logger,
+            UserManager<AppUser> userManager)
         {
             _userService = userService;
             _logger = logger;
+            _userManager = userManager;
         }
 
         [HttpPost]
@@ -101,12 +108,19 @@ namespace WebBase.Controllers
         {
             var user = await _userService.FindById(id);
             if (user == null)
-                return NotFound(new ApiNotFoundResponse($"User id {id} not exsited!"));
+                return NotFound(new ApiNotFoundResponse($"Không tồn tại tài khoản có id: {id}"));
+
+            var adminUsers = await _userManager.GetUsersInRoleAsync(SystemConstants.Roles.Admin);
+            var otherUsers = adminUsers.Where(x => x.Id != id).ToList();
+            if (otherUsers.Count == 0)
+            {
+                return BadRequest(new ApiBadRequestResponse("Bạn không thể xóa người dùng quản trị duy nhất còn lại."));
+            }
             var userVM = new UserVM()
             {
                 UserName = user.UserName,
                 Email = user.Email,
-                Dob = user.Dob.ToString("dd/MM/yyyy"),
+                Dob = user.Dob,
                 PhoneNumber = user.PhoneNumber,
                 FirstName = user.FirstName,
                 LastName = user.LastName
@@ -136,6 +150,56 @@ namespace WebBase.Controllers
             var result = await _userService.ChangePassword(user, userCPM);
             if (result.Succeeded)
                 return NoContent();
+            return BadRequest(new ApiBadRequestResponse(result));
+        }
+
+        [HttpGet("{userId}/roles")]
+        [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.VIEW)]
+        public async Task<IActionResult> GetUserRoles(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound(new ApiNotFoundResponse($"Cannot found user with id: {userId}"));
+            var roles = await _userManager.GetRolesAsync(user);
+            return Ok(roles);
+        }
+
+        [HttpPost("{userId}/roles")]
+        [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.UPDATE)]
+        public async Task<IActionResult> PostRolesToUser(string userId, [FromBody] RoleAssignRequestModel request)
+        {
+            if (request.RoleNames?.Length == 0)
+            {
+                return BadRequest(new ApiBadRequestResponse("Role names cannot empty"));
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound(new ApiNotFoundResponse($"Cannot found user with id: {userId}"));
+            var result = await _userManager.AddToRolesAsync(user, request.RoleNames);
+            if (result.Succeeded)
+                return Ok();
+            return BadRequest(new ApiBadRequestResponse(result));
+        }
+
+        [HttpDelete("{userId}/roles")]
+        [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.UPDATE)]
+        public async Task<IActionResult> RemoveRolesFromUser(string userId, [FromQuery] RoleAssignRequestModel request)
+        {
+            if (request.RoleNames?.Length == 0)
+            {
+                return BadRequest(new ApiBadRequestResponse("Role names cannot empty"));
+            }
+            if (request.RoleNames.Length == 1 && request.RoleNames[0] == SystemConstants.Roles.Admin)
+            {
+                return BadRequest(new ApiBadRequestResponse($"Cannot remove {SystemConstants.Roles.Admin} role"));
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound(new ApiNotFoundResponse($"Cannot found user with id: {userId}"));
+            var result = await _userManager.RemoveFromRolesAsync(user, request.RoleNames);
+            if (result.Succeeded)
+                return Ok();
+
             return BadRequest(new ApiBadRequestResponse(result));
         }
     }

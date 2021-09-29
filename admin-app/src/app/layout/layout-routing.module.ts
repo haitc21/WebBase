@@ -6,15 +6,28 @@ const routes: Routes = [
     {
         path: '',
         component: LayoutComponent,
+        data: {
+            customBreadcrumb: 'Trang chủ'
+        },
         children: [
-            { path: '', redirectTo: 'dashboard', pathMatch: 'prefix' },
+            {
+                path: '',
+                redirectTo: 'dashboard',
+                pathMatch: 'prefix',
+            },
             {
                 path: 'dashboard',
-                loadChildren: () => import('./dashboard/dashboard.module').then((m) => m.DashboardModule)
+                loadChildren: () => import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
+                data: {
+                    customBreadcrumb: 'Bảng tin'
+                }
             },
             {
                 path: 'systems',
-                loadChildren: () => import('./systems/systems.module').then((m) => m.SystemsModule)
+                loadChildren: () => import('./systems/systems.module').then((m) => m.SystemsModule),
+                data: {
+                    customBreadcrumb: 'Hệ thống'
+                }
             }
         ]
     }
@@ -24,4 +37,4 @@ const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule]
 })
-export class LayoutRoutingModule {}
+export class LayoutRoutingModule { }

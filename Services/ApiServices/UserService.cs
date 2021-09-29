@@ -62,8 +62,7 @@ namespace WebBase.Services.ApiServices
             {
                 filter = filter.ToLower();
                 query = query.Where(r => r.UserName.ToLower().Contains(filter)
-                || r.FirstName.ToLower().Contains(filter)
-                || r.LastName.ToLower().Contains(filter)
+                || r.PhoneNumber.ToLower().Contains(filter)
                 || r.Email.ToLower().Contains(filter)
                 );
             }
@@ -92,6 +91,10 @@ namespace WebBase.Services.ApiServices
             user.FirstName = userUM.FirstName;
             user.LastName = userUM.LastName;
             user.Email = userUM.Email;
+            if (user.EmailConfirmed && user.Email != userUM.Email)
+            {
+                user.EmailConfirmed = false;
+            }
             user.FirstName = userUM.FirstName;
             user.PhoneNumber = userUM.PhoneNumber;
             user.Dob = DateTime.Parse(userUM.Dob);
@@ -155,7 +158,7 @@ namespace WebBase.Services.ApiServices
                 Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
-                Dob = user.Dob.ToString("dd/MM/yyyy"),
+                Dob = user.Dob,
                 PhoneNumber = user.PhoneNumber,
                 FirstName = user.FirstName,
                 LastName = user.LastName

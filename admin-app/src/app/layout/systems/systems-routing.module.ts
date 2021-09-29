@@ -7,22 +7,38 @@ import { SystemsComponent } from './systems.component';
 import { UsersComponent } from './users/users.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'users', pathMatch: 'prefix' },
+  {
+    path: '',
+    redirectTo: 'users',
+    pathMatch: 'prefix'
+  },
   {
     path: 'functions',
-    component: FunctionsComponent
+    component: FunctionsComponent,
+    data: {
+      customBreadcrumb: 'Chức năng'
+    }
   },
   {
     path: 'users',
-    component: UsersComponent
+    component: UsersComponent,
+    data: {
+      customBreadcrumb: 'Người dùng'
+    }
   },
   {
     path: 'roles',
-    component: RolesComponent
+    component: RolesComponent,
+    data: {
+      customBreadcrumb: 'Nhóm quyền'
+    }
   },
   {
     path: 'permissions',
-    component: PermissionsComponent
+    component: PermissionsComponent,
+    data: {
+      customBreadcrumb: 'Quyền hạn'
+    }
   }
 ];
 

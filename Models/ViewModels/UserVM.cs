@@ -1,4 +1,6 @@
-﻿namespace WebBase.Models.ViewModels
+﻿using System;
+
+namespace WebBase.Models.ViewModels
 {
     public class UserVM
     {
@@ -11,6 +13,6 @@
 
         public string PhoneNumber { get; set; }
 
-        public string Dob { get; set; }
+        public DateTime Dob { get; set; }
     }
 }
