@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BaseService } from './base.service';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { UserModel, PaginationModel } from '../models';
+import { UserModel, PaginationModel, UserRoleModel } from '../models';
 import { UtilitiesService } from './utilitie.service';
 
 @Injectable({ providedIn: 'root' })
@@ -70,8 +70,10 @@ export class UserService extends BaseService {
     }
 
     getUserRoles(userId: string) {
-        return this._http.get<string[]>(`${environment.apiUrl}/api/users/${userId}/roles`, { headers: this._sharedHeaders })
-            .pipe(catchError(this.handleError));
+        return this._http.get<UserRoleModel>(`${environment.apiUrl}/api/users/${userId}/roles`, { headers: this._sharedHeaders })
+            .pipe(map((response: UserRoleModel) => {
+                return response;
+            }), catchError(this.handleError));
     }
     getRolesUserNotHas(userId: string) {
         return this._http.get<string[]>(`${environment.apiUrl}/api/users/${userId}/notroles`, { headers: this._sharedHeaders })

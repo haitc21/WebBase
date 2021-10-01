@@ -1,4 +1,4 @@
-import { UserService, UserModel, COL_DATA_TYPE, ACTION_TYPE, Dictionary, NotificationService, PaginationModel, MessageConstants } from './../../../shared';
+import { UserService, UserModel, COL_DATA_TYPE, ACTION_TYPE, Dictionary, NotificationService, PaginationModel, MessageConstants, UserRoleModel } from './../../../shared';
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
@@ -262,15 +262,9 @@ export class UsersComponent implements OnInit, OnDestroy {
       .catch(error => {
         this.notificationService.showError(error);
       });
-    let rolesUserNotHas = await this.userService.getRolesUserNotHas(entity.id)
-      .toPromise()
-      .catch(error => {
-        this.notificationService.showError(error);
-      });
     if (this.errorMsg === '') {
-      userRoles = userRoles as string[];
-      rolesUserNotHas = rolesUserNotHas as string[];
-      userRoles.forEach(role => {
+      userRoles = userRoles as UserRoleModel;
+      userRoles?.roles.forEach(role => {
         this.listRole.push({
           key: role,
           title: role,
@@ -278,7 +272,7 @@ export class UsersComponent implements OnInit, OnDestroy {
           direction: 'right'
         });
       });
-      rolesUserNotHas.forEach(role => {
+      userRoles?.roleNotHas.forEach(role => {
         this.listRole.push({
           key: role,
           title: role,

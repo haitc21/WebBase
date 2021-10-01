@@ -6,5 +6,8 @@ export class UserModel {
     email: string;
     phoneNumber: string;
     dob: string;
-
+}
+export class UserRoleModel {
+    roles: string[];
+    roleNotHas: string[];
 }

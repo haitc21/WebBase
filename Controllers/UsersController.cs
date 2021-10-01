@@ -165,22 +165,12 @@ namespace WebBase.Controllers
             if (user == null)
                 return NotFound(new ApiNotFoundResponse($"Cannot found user with id: {userId}"));
             var roles = await _userManager.GetRolesAsync(user);
-            var result = roles.OrderBy(r => r).ToList();
-            return Ok(result);
-        }
-
-        [HttpGet("{userId}/notroles")]
-        [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.VIEW)]
-        public async Task<IActionResult> GetRolesUserNotHas(string userId)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return NotFound(new ApiNotFoundResponse($"Cannot found user with id: {userId}"));
-            var userRoles = await _userManager.GetRolesAsync(user);
-            var result = await _roleManager.Roles.Select(r => r.Name)
+            var userRoles = roles.OrderBy(r => r).ToList();
+            var roleNotHas = await _roleManager.Roles.Select(r => r.Name)
                                             .Where(rn => userRoles.Contains(rn) == false)
                                             .OrderBy(rn => rn)
                                             .ToListAsync();
+            var result = new UserToleVM(userRoles, roleNotHas);
             return Ok(result);
         }
 
