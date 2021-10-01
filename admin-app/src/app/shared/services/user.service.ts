@@ -73,6 +73,10 @@ export class UserService extends BaseService {
         return this._http.get<string[]>(`${environment.apiUrl}/api/users/${userId}/roles`, { headers: this._sharedHeaders })
             .pipe(catchError(this.handleError));
     }
+    getRolesUserNotHas(userId: string) {
+        return this._http.get<string[]>(`${environment.apiUrl}/api/users/${userId}/notroles`, { headers: this._sharedHeaders })
+            .pipe(catchError(this.handleError));
+    }
 
     removeRolesFromUser(id, roleNames: string[]) {
         let rolesQuery = '';

@@ -26,7 +26,8 @@ export enum ACTION_TYPE {
   UPDATE,
   DELETE,
   DETAILS,
-  APPROVE
+  APPROVE,
+  ADDROLE
 }
 
 export type SortOrder = NzTableSortOrder;

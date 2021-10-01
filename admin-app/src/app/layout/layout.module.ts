@@ -8,12 +8,16 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { LayoutRoutingModule } from './layout-routing.module';
 import { LayoutComponent } from './layout.component';
 
+import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
+
+
 @NgModule({
     imports: [
         CommonModule,
         LayoutRoutingModule,
         TranslateModule,
-        NgbDropdownModule
+        NgbDropdownModule,
+        NzBreadCrumbModule
     ],
     declarations: [
         LayoutComponent,

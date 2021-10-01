@@ -13,7 +13,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker'
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
-
+import { NzTransferModule } from 'ng-zorro-antd/transfer';
 
 import { SystemsComponent } from './systems.component';
 import { FunctionsComponent } from './functions/functions.component';
@@ -31,7 +31,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     FunctionsComponent,
     UsersComponent,
     RolesComponent,
-    PermissionsComponent
+    PermissionsComponent,
   ],
   imports: [
     CommonModule,
@@ -49,7 +49,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     ValidationMsgModule,
     NzIconModule,
     NzDatePickerModule,
-    NzBreadCrumbModule
+    NzBreadCrumbModule,
+    NzTransferModule
   ],
   providers: [
     NotificationService,

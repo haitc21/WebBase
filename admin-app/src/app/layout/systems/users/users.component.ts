@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/c
 import { Observable, Subscription } from 'rxjs';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
+import { TransferItem } from 'ng-zorro-antd/transfer';
 
 @Component({
   selector: 'app-users',
@@ -18,11 +19,16 @@ export class UsersComponent implements OnInit, OnDestroy {
   public keyword = '';
   COL_DATA_TYPE = COL_DATA_TYPE;
   ACTION_TYPE = ACTION_TYPE;
-  // Role
+  // User
   public users: Dictionary<any>[] = [];
 
   // Modal
   tplModalButtonLoading = false;
+
+  //Transfer riley
+  listRole: TransferItem[] = [];
+  userRole: string[] = [];
+  userIdAddRole = '';
 
   // Form
   createForm!: FormGroup;
@@ -104,6 +110,10 @@ export class UsersComponent implements OnInit, OnDestroy {
   @ViewChild('detailContent') detailContentTpl!: TemplateRef<any>;
   @ViewChild('detailFooter') detailFooterTpl!: TemplateRef<any>;
 
+  @ViewChild('addRoleTitle') addRoleTitleTpl!: TemplateRef<any>;
+  @ViewChild('addRoleContent') addRoleContentTpl!: TemplateRef<any>;
+  @ViewChild('addRoleFooter') addRoleFooterTpl!: TemplateRef<any>;
+
   constructor(private userService: UserService,
     private notificationService: NotificationService,
     private modal: NzModalService,
@@ -161,6 +171,19 @@ export class UsersComponent implements OnInit, OnDestroy {
     });
   }
 
+
+  change(ret: {}): void {
+    let lst = this.listRole.filter(x => x.direction == 'right');
+    this.userRole = [];
+    lst.forEach(x => {
+      this.userRole.push(x.title);
+    });
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  filterOption(inputValue: string, item: any): boolean {
+    return item.key.indexOf(inputValue) > -1;
+  }
+
   private PasswordValidator(control: AbstractControl): { [key: string]: boolean } | null {
     let password = control.get('password');
     let confirmPassword = control.get('confirmPassword');
@@ -198,7 +221,6 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.loadData();
   }
   delete(entity: UserModel) {
-    console.log(entity);
     this.notificationService.showConfirmation(MessageConstants.CONFIRM_DELETE_MSG,
       () => this.deleteConfirm(entity.id));
   }
@@ -226,10 +248,50 @@ export class UsersComponent implements OnInit, OnDestroy {
   details(entity: UserModel) {
     this.createTplModal(this.detailTitleTpl, this.detailContentTpl, this.detailFooterTpl, entity);
   }
-  resetValueForm() {
-    console.log('resetValueForm');
+  async addRole(entity: UserModel) {
+    this.errorMsg = '';
+    this.userIdAddRole = entity.id;
+    let userRoles = await this.userService.getUserRoles(entity.id)
+      .toPromise()
+      .catch(error => {
+        this.errorMsg = error;
+        this.notificationService.showError(error);
+      });
+    let rolesUserNotHas = await this.userService.getRolesUserNotHas(entity.id)
+      .toPromise()
+      .catch(error => {
+        this.errorMsg = error;
+        this.notificationService.showError(error);
+      });
+    if (this.errorMsg === '') {
+      userRoles = userRoles as string[];
+      rolesUserNotHas = rolesUserNotHas as string[];
+      userRoles.forEach(role => {
+        this.listRole.push({
+          key: role,
+          title: role,
+          description: role,
+          direction: 'right'
+        });
+      });
+      rolesUserNotHas.forEach(role => {
+        this.listRole.push({
+          key: role,
+          title: role,
+          description: role,
+          direction: 'left'
+        });
+      });
+    }
+    this.createTplModal(this.addRoleTitleTpl, this.addRoleContentTpl, this.addRoleFooterTpl, entity);
+  }
+  restValue() {
     this.createForm.reset();
     this.editForm.reset();
+    this.errorMsg = '';
+    this.userRole = [];
+    this.userIdAddRole = '';
+    this.listRole = [];
   }
   createTplModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, entity: any | null): void {
     this.modal.create({
@@ -243,25 +305,21 @@ export class UsersComponent implements OnInit, OnDestroy {
       nzWidth: 700,
       nzCloseIcon: this.closeIconTpl,
       nzOnOk: () => {
-        this.resetValueForm();
-        console.log('ok');
+        this.restValue();
       },
       nzOnCancel: () => {
-        this.resetValueForm();
-        console.log('cancel');
+        this.restValue();
       }
     });
   }
   saveChange(modelRef: NzModalRef, action: number): void {
     this.tplModalButtonLoading = true;
-    console.log(this.createForm.value);
     if (action === this.ACTION_TYPE.UPDATE) {
-      console.log('UPDATE');
       this.subscription.add(
         this.userService.update(this.editForm.value.id, this.editForm.value)
           .subscribe(() => {
             this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
-            this.resetValueForm();
+            this.restValue();
             this.tplModalButtonLoading = false;
             modelRef.destroy();
             this.loadData();
@@ -273,12 +331,30 @@ export class UsersComponent implements OnInit, OnDestroy {
       );
     }
     else if (action === this.ACTION_TYPE.CREATE) {
-      console.log('CREATE');
       this.subscription.add(
         this.userService.add(this.createForm.value)
           .subscribe(() => {
             this.notificationService.showSuccess(MessageConstants.CREATED_OK_MSG);
-            this.resetValueForm();
+            this.restValue();
+            this.tplModalButtonLoading = false;
+            modelRef.destroy();
+            this.loadData();
+          }, error => {
+            this.errorMsg = error.replace('<br/>', '');
+            this.tplModalButtonLoading = false;
+            setTimeout(() => { this.errorMsg = null; }, 5000);
+          })
+      );
+    }
+    else if (action === this.ACTION_TYPE.ADDROLE) {
+      let assignRolesToUser = {
+        roleNames: this.userRole
+      }
+      this.subscription.add(
+        this.userService.assignRolesToUser(this.userIdAddRole, assignRolesToUser)
+          .subscribe(() => {
+            this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
+            this.restValue();
             this.tplModalButtonLoading = false;
             modelRef.destroy();
             this.loadData();

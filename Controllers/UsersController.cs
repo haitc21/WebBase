@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -20,14 +21,17 @@ namespace WebBase.Controllers
         private readonly IUserService _userService;
         private readonly ILogger<UsersController> _logger;
         private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<AppRole> _roleManager;
 
         public UsersController(IUserService userService,
             ILogger<UsersController> logger,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            RoleManager<AppRole> roleManager)
         {
             _userService = userService;
             _logger = logger;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpPost]
@@ -161,45 +165,49 @@ namespace WebBase.Controllers
             if (user == null)
                 return NotFound(new ApiNotFoundResponse($"Cannot found user with id: {userId}"));
             var roles = await _userManager.GetRolesAsync(user);
-            return Ok(roles);
+            var result = roles.OrderBy(r => r).ToList();
+            return Ok(result);
+        }
+
+        [HttpGet("{userId}/notroles")]
+        [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.VIEW)]
+        public async Task<IActionResult> GetRolesUserNotHas(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound(new ApiNotFoundResponse($"Cannot found user with id: {userId}"));
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var result = await _roleManager.Roles.Select(r => r.Name)
+                                            .Where(rn => userRoles.Contains(rn) == false)
+                                            .OrderBy(rn => rn)
+                                            .ToListAsync();
+            return Ok(result);
         }
 
         [HttpPost("{userId}/roles")]
         [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.UPDATE)]
         public async Task<IActionResult> PostRolesToUser(string userId, [FromBody] RoleAssignRequestModel request)
         {
-            if (request.RoleNames?.Length == 0)
-            {
-                return BadRequest(new ApiBadRequestResponse("Role names cannot empty"));
-            }
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return NotFound(new ApiNotFoundResponse($"Cannot found user with id: {userId}"));
+            if (user.UserName == "admin" && request.RoleNames.Contains("Admin") == false)
+            {
+                return NotFound(new ApiNotFoundResponse($"Không thể xóa quyền Admin của tài khoản Admin!"));
+            }
+            // Xoá hết các role đang có
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            if (userRoles.Count > 0)
+            {
+                var removeRole = await _userManager.RemoveFromRolesAsync(user, userRoles);
+                if (!removeRole.Succeeded)
+                    return BadRequest(new ApiBadRequestResponse(removeRole));
+            }
+            // Thêm mới role
             var result = await _userManager.AddToRolesAsync(user, request.RoleNames);
             if (result.Succeeded)
                 return Ok();
-            return BadRequest(new ApiBadRequestResponse(result));
-        }
-
-        [HttpDelete("{userId}/roles")]
-        [ClaimRequirement(FunctionCode.SYSTEM_USER, CommandCode.UPDATE)]
-        public async Task<IActionResult> RemoveRolesFromUser(string userId, [FromQuery] RoleAssignRequestModel request)
-        {
-            if (request.RoleNames?.Length == 0)
-            {
-                return BadRequest(new ApiBadRequestResponse("Role names cannot empty"));
-            }
-            if (request.RoleNames.Length == 1 && request.RoleNames[0] == SystemConstants.Roles.Admin)
-            {
-                return BadRequest(new ApiBadRequestResponse($"Cannot remove {SystemConstants.Roles.Admin} role"));
-            }
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return NotFound(new ApiNotFoundResponse($"Cannot found user with id: {userId}"));
-            var result = await _userManager.RemoveFromRolesAsync(user, request.RoleNames);
-            if (result.Succeeded)
-                return Ok();
-
             return BadRequest(new ApiBadRequestResponse(result));
         }
     }

@@ -32,6 +32,7 @@ export class TableComponent implements OnInit, OnChanges {
   @Output() actionEdit = new EventEmitter<Dictionary<any>>();
   @Output() actionDelete = new EventEmitter<Dictionary<any>>();
   @Output() actionApprove = new EventEmitter<Dictionary<any>>();
+  @Output() actionAddRole = new EventEmitter<Dictionary<any>>();
 
   @ContentChildren(TblColumnDirective) columns!: QueryList<TblColumnDirective>;
 
@@ -55,5 +56,8 @@ export class TableComponent implements OnInit, OnChanges {
   }
   approve(entity: any) {
     this.actionApprove.emit(entity);
+  }
+  addRole(entity: any) {
+    this.actionAddRole.emit(entity);
   }
 }

@@ -1,4 +1,8 @@
-<nz-breadcrumb [nzAutoGenerate]="true" [nzRouteLabel]="'customBreadcrumb'" [nzSeparator]="iconBreadcrumb"></nz-breadcrumb>
+<nz-breadcrumb
+    [nzAutoGenerate]="true"
+    [nzRouteLabel]="'customBreadcrumb'"
+    [nzSeparator]="iconBreadcrumb"
+></nz-breadcrumb>
 <ng-template #iconBreadcrumb><i class="fa fa-arrow-right"></i></ng-template>
 <nz-layout>
     <nz-header>
@@ -36,11 +40,12 @@
             (pageIndexChange)="changePage($event)"
             (pageSizeChange)="changeSize($event)"
             [loading]="loading"
-            [actions]="[ACTION_TYPE.UPDATE, ACTION_TYPE.DELETE, ACTION_TYPE.DETAILS]"
-            [functionName]="'SYSTEM_ROLE'"
+            [actions]="[ACTION_TYPE.UPDATE, ACTION_TYPE.DELETE, ACTION_TYPE.DETAILS, ACTION_TYPE.ADDROLE]"
+            [functionName]="'SYSTEM_USER'"
             (actionEdit)="update($event)"
             (actionDelete)="delete($event)"
             (actionDetails)="details($event)"
+            (actionAddRole)="addRole($event)"
         >
             <app-tbl-column header="STT" [dataType]="COL_DATA_TYPE.COUNT"></app-tbl-column>
             <app-tbl-column header="Tên tài khoản" key="userName"></app-tbl-column>
@@ -65,6 +70,9 @@
 </ng-template>
 <ng-template #detailTitle>
     <h3>Chi tiết người dùng</h3>
+</ng-template>
+<ng-template #addRoleTitle>
+    <h3>Quản lý quyền</h3>
 </ng-template>
 
 <ng-template #createContent let-params>
@@ -382,6 +390,18 @@
     </div>
 </ng-template>
 
+<ng-template #addRoleContent let-params>
+    <div class="alert alert-danger" role="alert" *ngIf="errorMsg">
+        {{ errorMsg }}
+    </div>
+    <nz-transfer
+        [nzDataSource]="listRole"
+        nzShowSearch
+        [nzFilterOption]="filterOption"
+        (nzChange)="change($event)"
+    ></nz-transfer>
+</ng-template>
+
 <ng-template #editFooter let-ref="modalRef">
     <button nz-button (click)="ref.destroy()">Đóng</button>
     <button
@@ -396,6 +416,19 @@
     </button>
 </ng-template>
 
+<ng-template #addRoleFooter let-ref="modalRef">
+    <button nz-button (click)="ref.destroy()">Đóng</button>
+    <button
+        type="submit"
+        nz-button
+        nzType="primary"
+        (click)="saveChange(ref, ACTION_TYPE.ADDROLE)"
+        [nzLoading]="tplModalButtonLoading"
+    >
+        Lưu
+    </button>
+</ng-template>
+
 <ng-template #createFooter let-ref="modalRef">
     <button nz-button (click)="ref.destroy()">Đóng</button>
     <button
@@ -403,7 +436,7 @@
         [disabled]="createForm.invalid"
         nz-button
         nzType="primary"
-        (click)="saveChange(ref, ACTION_TYPE.CREATE)"
+        (click)="saveChange(ref, ACTION_TYPE.ADDROLE)"
         [nzLoading]="tplModalButtonLoading"
     >
         Lưu

@@ -95,7 +95,6 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.loadData();
   }
   delete(entity: RoleModel) {
-    console.log(entity);
     this.notificationService.showConfirmation(MessageConstants.CONFIRM_DELETE_MSG,
       () => this.deleteConfirm(entity.id));
   }
@@ -117,7 +116,6 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.createTplModal(this.editTitleTpl, this.modalContentTpl, this.editFooterTpl, entity);
   }
   resetValueForm() {
-    console.log('resetValueForm');
     this.form.patchValue({
       id: [''],
       name: [''],
@@ -137,19 +135,15 @@ export class RolesComponent implements OnInit, OnDestroy {
       nzCloseIcon: this.closeIconTpl,
       nzOnOk: () => {
         this.resetValueForm();
-        console.log('ok');
       },
       nzOnCancel: () => {
         this.resetValueForm();
-        console.log('cancel');
       }
     });
   }
   saveChange(modelRef: NzModalRef, action: number): void {
     this.tplModalButtonLoading = true;
-    console.log(this.form.value);
     if (action === this.ACTION_TYPE.UPDATE) {
-      console.log('UPDATE');
       this.subscription.add(
         this.rolesService.update(this.form.value.id, this.form.value)
           .subscribe(() => {
@@ -166,7 +160,6 @@ export class RolesComponent implements OnInit, OnDestroy {
       );
     }
     else if (action === this.ACTION_TYPE.CREATE) {
-      console.log('CREATE');
       this.subscription.add(
         this.rolesService.add(this.form.value)
           .subscribe(() => {
