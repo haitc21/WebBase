@@ -396,6 +396,8 @@
     </div>
     <nz-transfer
         [nzDataSource]="listRole"
+        [nzTitles]="['Quyền chưa thêm', 'Quyền được thêm']"
+        [nzListStyle]="transferStyles"
         nzShowSearch
         [nzFilterOption]="filterOption"
         (nzChange)="change($event)"

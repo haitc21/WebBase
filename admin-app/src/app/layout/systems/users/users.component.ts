@@ -29,6 +29,12 @@ export class UsersComponent implements OnInit, OnDestroy {
   listRole: TransferItem[] = [];
   userRole: string[] = [];
   userIdAddRole = '';
+  transferStyles = {
+    "width": "100%",
+    "height": "400px",
+    "border": "1px solid",
+    'background-color': '#acaced'
+  }
 
   // Form
   createForm!: FormGroup;
@@ -254,13 +260,11 @@ export class UsersComponent implements OnInit, OnDestroy {
     let userRoles = await this.userService.getUserRoles(entity.id)
       .toPromise()
       .catch(error => {
-        this.errorMsg = error;
         this.notificationService.showError(error);
       });
     let rolesUserNotHas = await this.userService.getRolesUserNotHas(entity.id)
       .toPromise()
       .catch(error => {
-        this.errorMsg = error;
         this.notificationService.showError(error);
       });
     if (this.errorMsg === '') {

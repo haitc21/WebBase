@@ -78,17 +78,6 @@ export class UserService extends BaseService {
             .pipe(catchError(this.handleError));
     }
 
-    removeRolesFromUser(id, roleNames: string[]) {
-        let rolesQuery = '';
-        for (const roleName of roleNames) {
-            rolesQuery += 'roleNames' + '=' + roleName + '&';
-        }
-        return this._http.delete(environment.apiUrl + '/api/users/' + id + '/roles?' + rolesQuery, { headers: this._sharedHeaders })
-            .pipe(
-                catchError(this.handleError)
-            );
-    }
-
     assignRolesToUser(userId: string, assignRolesToUser: any) {
         return this._http.post(`${environment.apiUrl}/api/users/${userId}/roles`,
             JSON.stringify(assignRolesToUser), { headers: this._sharedHeaders })
