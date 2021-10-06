@@ -199,61 +199,40 @@ namespace WebBase.Controllers
         [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.VIEW)]
         public async Task<IActionResult> GetCommantsInFunction(string functionId)
         {
-            var query = (from c in _context.Commands
-                        join cif in _context.CommandInFunctions on c.Id equals cif.CommandId into result1
-                        from commandInFunction in result1.DefaultIfEmpty()
-                        join f in _context.Functions on commandInFunction.FunctionId equals f.Id into result2
-                        from function in result2.DefaultIfEmpty()
-                        where function.Id == functionId
-                        orderby c.Name
-                        select new
-                        {
-                            c.Id,
-                            c.Name
-                        }).Distinct();
-
-            var data = await query.Select(x => new CommandVM()
-            {
-                Id = x.Id,
-                Name = x.Name
-            }).ToListAsync();
-
-            return Ok(data);
-        }
-
-        [HttpGet("{functionId}/commands/not-in-function")]
-        [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.VIEW)]
-        public async Task<IActionResult> GetCommantsNotInFunction(string functionId)
-        {
             var query1 = (from c in _context.Commands
-                         join cif in _context.CommandInFunctions on c.Id equals cif.CommandId into result1
-                         from commandInFunction in result1.DefaultIfEmpty()
-                         join f in _context.Functions on commandInFunction.FunctionId equals f.Id into result2
-                         from function in result2.DefaultIfEmpty()
-                         where function.Id == functionId
-                         select new
-                         {
-                             c.Id,
-                             commandInFunction.FunctionId
-                         }).Distinct();
+                          join cif in _context.CommandInFunctions on c.Id equals cif.CommandId into result1
+                          from commandInFunction in result1.DefaultIfEmpty()
+                          where commandInFunction.FunctionId == functionId
+                          orderby c.Name
+                          select new
+                          {
+                              c.Id,
+                              c.Name,
+                              commandInFunction.FunctionId
+                          }).Distinct();
+            var query2 = (from c in _context.Commands
+                          join cif in query1 on c.Id equals cif.Id into result
+                          from cmd in result.DefaultIfEmpty()
+                          where cmd.FunctionId == null
+                          orderby c.Name
+                          select new
+                          {
+                              c.Id,
+                              c.Name
+                          }).Distinct();
 
-            var query = (from c in _context.Commands
-                        join cif in query1 on c.Id equals cif.Id into result
-                        from cmd in result.DefaultIfEmpty()
-                        where cmd.FunctionId == null
-                         orderby c.Name
-                         select new
-                        {
-                            c.Id,
-                            c.Name
-                        }).Distinct();
+            var cmdInFunc = await query1.Select(x => new CommandVM()
+            {
+                Id = x.Id,
+                Name = x.Name,
+            }).ToListAsync();
 
-            var data = await query.Select(x => new CommandVM()
+            var cmdNotInFunc = await query2.Select(x => new CommandVM()
             {
                 Id = x.Id,
                 Name = x.Name
             }).ToListAsync();
-
+            var data = new CmdFuncVM(cmdInFunc, cmdNotInFunc);
             return Ok(data);
         }
 
@@ -262,37 +241,42 @@ namespace WebBase.Controllers
         [ApiValidationFilter]
         public async Task<IActionResult> PostCommandToFunction(string functionId, [FromBody] CommandAssignRequest request)
         {
+            var function = await _context.Functions.FindAsync(functionId);
+            if (function == null)
+                return NotFound(new ApiNotFoundResponse($"Không tìm thấy chức năng id: {functionId}"));
+
+            var commands = await _context.Commands.Select(c => c.Id).ToListAsync();
+
+            List<string> cif = await _context.CommandInFunctions.Where(c => c.FunctionId == functionId).Select(c => c.CommandId).ToListAsync();
+
             foreach (var commandId in request.CommandIds)
             {
-                if (await _context.CommandInFunctions.FindAsync(commandId, functionId) != null)
-                    return BadRequest(new ApiBadRequestResponse("This command has been existed in function"));
+                if (!commands.Contains(commandId))
+                    return NotFound(new ApiNotFoundResponse($"Không tìm thấy hành động id: {commandId}"));
+                if (!cif.Contains(commandId))
+                {
+                    var entity = new CommandInFunction()
+                    {
+                        CommandId = commandId,
+                        FunctionId = functionId
+                    };
 
+                    _context.CommandInFunctions.Add(entity);
+                }
+                else
+                {
+                    cif.Remove(commandId);
+                }
+            }
+            foreach (var commandId in cif)
+            {
                 var entity = new CommandInFunction()
                 {
                     CommandId = commandId,
                     FunctionId = functionId
                 };
+                _context.CommandInFunctions.Remove(entity);
 
-                _context.CommandInFunctions.Add(entity);
-            }
-
-            if (request.AddToAllFunctions)
-            {
-                var otherFunctions = _context.Functions.Where(x => x.Id != functionId);
-                foreach (var function in otherFunctions)
-                {
-                    foreach (var commandId in request.CommandIds)
-                    {
-                        if (await _context.CommandInFunctions.FindAsync(request.CommandIds, function.Id) == null)
-                        {
-                            _context.CommandInFunctions.Add(new CommandInFunction()
-                            {
-                                CommandId = commandId,
-                                FunctionId = function.Id
-                            });
-                        }
-                    }
-                }
             }
             var result = await _context.SaveChangesAsync();
 
@@ -303,31 +287,6 @@ namespace WebBase.Controllers
             else
             {
                 return BadRequest(new ApiBadRequestResponse("Add command to function failed"));
-            }
-        }
-
-        [HttpDelete("{functionId}/commands")]
-        [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.UPDATE)]
-        public async Task<IActionResult> DeleteCommandToFunction(string functionId, [FromQuery] CommandAssignRequest request)
-        {
-            foreach (var commandId in request.CommandIds)
-            {
-                var entity = await _context.CommandInFunctions.FindAsync(commandId, functionId);
-                if (entity == null)
-                    return BadRequest(new ApiBadRequestResponse("This command is not existed in function"));
-
-                _context.CommandInFunctions.Remove(entity);
-            }
-
-            var result = await _context.SaveChangesAsync();
-
-            if (result > 0)
-            {
-                return Ok();
-            }
-            else
-            {
-                return BadRequest(new ApiBadRequestResponse("Delete command to function failed"));
             }
         }
     }
