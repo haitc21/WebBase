@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BaseService } from './base.service';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { FunctionModel } from '../models';
+import { TreeMolde as TreeModel } from '../models';
 
 /* @internal 
 * Chứa cá phương thức xử lý mảng, chuỗi
@@ -36,33 +36,72 @@ export class UtilitiesService extends BaseService {
     return roots;
   }
 
-  UnflatteringForTree = (arr: any[]): any[] => {
-    const map = {};
-    const roots: any[] = [];
-    let node = {
-      data: {
-        id: '',
-        parentId: ''
-      },
-      expanded: true,
-      children: []
-    };
-    for (let i = 0; i < arr.length; i += 1) {
-      map[arr[i].id] = i; // initialize the map
-      arr[i].data = arr[i]; // initialize the data
-      arr[i].children = []; // initialize the children
+  UnflatteringForTree = (roots: any[]): TreeModel[] => {
+    // console.log('roots truyen vao');
+    // console.log(roots);
+    // map là đối tượng kiểu {[key: string]: number} number là index trong roots
+    // dùng để đánh dấu vị trí các phần tử trong roots
+    const map: { [key: string]: number } = {};
+    const result: TreeModel[] = [];
+    let node: TreeModel = new TreeModel();
+    for (let i = 0; i < roots.length; i += 1) {
+      map[roots[i].id] = i;
+      roots[i].data = roots[i]; // thêm trường data
+      roots[i].children = []; // thêm trường children
     }
-    for (let i = 0; i < arr.length; i += 1) {
-      node = arr[i];
-      if (node.data.parentId !== null && arr[map[node.data.parentId]] != undefined) {
-        arr[map[node.data.parentId]].children.push(node);
+    for (let i = 0; i < roots.length; i += 1) {
+      node = {
+        id: roots[i].id,
+        parentId: roots[i].parentId,
+        data: roots[i].data,
+        expand: false,
+        level: 0,
+        children: roots[i].children
+      };
+      if (node.parentId !== null && roots[map[node.parentId]] != undefined) {
+        // nếu phần tử thứ i trong roots có parentId 
+        // và phần tử có id  = parentId tồn tại
+        // thì đẩy phần tử node vào phần tử có id  = parentId trong roots
+        // console.log('node có cha');
+        // console.log(node.id);
+        roots[map[node.parentId]].children.push(node);
       } else {
-        roots.push(node);
+        // Đẩy node mồ côi vào result
+        result.push(node);
       }
     }
-    return roots;
+    return result;
   }
+  convertTreeToList(root: TreeModel): TreeModel[] {
+    // console.log('convertTreeToList');
+    // console.log(root);
+    const stack: TreeModel[] = [root];
+    const result: TreeModel[] = [];
+    const hashMap = {};
 
+    while (stack.length !== 0) {
+      // console.log('stack');
+      // console.log(stack);
+      // console.log(stack.length);
+      const node = stack.pop(); // phần tử cuối của stack
+      // console.log('node stack');
+      // console.log(node);
+      if (!hashMap[node.id]) {
+        hashMap[node.id] = true;
+        result.push(node);
+      }
+      // console.log(hashMap);
+      if (node.children) {
+        for (let i = node.children.length - 1; i >= 0; i--) {
+          // console.log(`node.level: ${node.level}`);
+          stack.push({ ...node.children[i], level: node.level! + 1, expand: false, parent: node });
+        }
+      }
+    }
+    // console.log('result');
+    // console.log(result);
+    return result;
+  }
   MakeSeoTitle(input: string) {
     if (input == undefined || input == '') {
       return '';

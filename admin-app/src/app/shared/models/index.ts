@@ -8,3 +8,5 @@ export * from './command-assign.model';
 export * from './permission-update-request.model';
 export * from './permission-screen.model';
 export * from './permission.model';
+export * from './command-in-function.model';
+export * from './tree.model';

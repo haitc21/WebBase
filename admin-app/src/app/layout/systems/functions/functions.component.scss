@@ -1,0 +1,28 @@
+.ant-layout-header {
+    background-color: white;
+    color: black;
+}
+
+nz-date-picker,
+nz-time-picker {
+    width: 100%;
+}
+.tblicon {
+    margin-right: 6px;
+    font-size: 18px;
+    color: rgb(91, 91, 233);
+}
+.tblicon:hover {
+    color: red;
+    font-size: 20px;
+    cursor: pointer;
+}
+.tbl-pagination {
+    justify-content: flex-end;
+}
+.tbl-head {
+    color: rgb(240, 224, 224);
+    font-size: 16px;
+    text-align: center;
+}
+

@@ -4,3 +4,4 @@ export * from './user.service';
 export * from './role.service';
 export * from './utilitie.service';
 export * from './notification.service';
+export * from './function.service';
