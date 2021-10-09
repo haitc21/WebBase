@@ -1,17 +1,31 @@
-<nz-breadcrumb [nzAutoGenerate]="true" [nzRouteLabel]="'customBreadcrumb'" [nzSeparator]="iconBreadcrumb"></nz-breadcrumb>
+<nz-breadcrumb
+    [nzAutoGenerate]="true"
+    [nzRouteLabel]="'customBreadcrumb'"
+    [nzSeparator]="iconBreadcrumb"
+></nz-breadcrumb>
 <ng-template #iconBreadcrumb><i class="fa fa-arrow-right"></i></ng-template>
 
 <nz-layout>
     <nz-header>
         <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32 }">
             <div nz-col nzSpan="18">
-                <button nz-button nzType="primary" (click)="createTplModal(createTitle, modalContent, createFooter)">
+                <button
+                    nz-button
+                    nzType="primary"
+                    appPermission
+                    appFunction="SYSTEM_ROLE"
+                    appAction="CREATE"
+                    (click)="createTplModal(createTitle, modalContent, createFooter)"
+                >
                     <span>Thêm</span>
                 </button>
             </div>
             <div nz-col nzSpan="6">
                 <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
                     <input
+                        appPermission
+                        appFunction="SYSTEM_ROLE"
+                        appAction="VIEW"
                         (keyup.enter)="search()"
                         type="text"
                         [(ngModel)]="keyword"
@@ -20,7 +34,15 @@
                     />
                 </nz-input-group>
                 <ng-template #suffixIconButton>
-                    <button (click)="search()" nz-button nzType="primary" nzSearch>
+                    <button
+                        appPermission
+                        appFunction="SYSTEM_USER"
+                        appAction="VIEW"
+                        (click)="search()"
+                        nz-button
+                        nzType="primary"
+                        nzSearch
+                    >
                         <i nz-icon nzType="search"></i>
                     </button>
                 </ng-template>

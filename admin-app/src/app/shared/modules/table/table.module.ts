@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableComponent } from './table.component';
-import { PermissionDirective, TblCellDirective, TblColumnDirective, TblHeaderDirective } from '../../directives';
+import { TblCellDirective, TblColumnDirective, TblHeaderDirective } from '../../directives';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { FormsModule } from '@angular/forms';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { PermissionModule } from '../permission/permission.module';
 
 @NgModule({
   imports: [
@@ -13,14 +14,14 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     NzTableModule,
     FormsModule,
     NzPaginationModule,
-    NzSpinModule
+    NzSpinModule,
+    PermissionModule
   ],
   declarations: [
     TableComponent,
     TblColumnDirective,
     TblCellDirective,
-    TblHeaderDirective,
-    PermissionDirective
+    TblHeaderDirective
   ],
   exports: [
     TableComponent,

@@ -1,4 +1,4 @@
-<!-- <nz-breadcrumb
+<nz-breadcrumb
     [nzAutoGenerate]="true"
     [nzRouteLabel]="'customBreadcrumb'"
     [nzSeparator]="iconBreadcrumb"
@@ -8,13 +8,23 @@
     <nz-header>
         <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32 }">
             <div nz-col nzSpan="18">
-                <button nz-button nzType="primary" (click)="createTplModal(createTitle, createContent, createFooter)">
+                <button
+                    appPermission
+                    appFunction="SYSTEM_FUNCTION"
+                    appAction="CREATE"
+                    nz-button
+                    nzType="primary"
+                    (click)="createTplModal(createTitle, createContent, createFooter)"
+                >
                     <span>Thêm</span>
                 </button>
             </div>
             <div nz-col nzSpan="6">
                 <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
                     <input
+                        appPermission
+                        appFunction="SYSTEM_FUNCTION"
+                        appAction="VIEW"
                         (keyup.enter)="search()"
                         type="text"
                         [(ngModel)]="keyword"
@@ -23,7 +33,15 @@
                     />
                 </nz-input-group>
                 <ng-template #suffixIconButton>
-                    <button (click)="search()" nz-button nzType="primary" nzSearch>
+                    <button
+                        appPermission
+                        appFunction="SYSTEM_FUNCTION"
+                        appAction="VIEW"
+                        (click)="search()"
+                        nz-button
+                        nzType="primary"
+                        nzSearch
+                    >
                         <i nz-icon nzType="search"></i>
                     </button>
                 </ng-template>
@@ -31,23 +49,70 @@
         </div>
     </nz-header>
     <nz-content>
-        <nz-table #expandTable [nzData]="functions" nzTableLayout="fixed">
+        <nz-table
+            class="table table-sm table-bordered table table-hover"
+            [nzLoading]="loading"
+            [nzLoadingIndicator]="loadingSpin"
+            #expandTable
+            [nzData]="dataDisplay"
+            nzTableLayout="fixed"
+            [nzLoading]="loading"
+        >
             <thead>
                 <tr>
-                    <th>Tên</th>
+                    <th class="bg-info tbl-head">Tên</th>
+                    <th class="bg-info tbl-head">Mã</th>
+                    <th class="bg-info tbl-head">Đường dẫn</th>
+                    <th class="bg-info tbl-head">Tác vụ</th>
                 </tr>
             </thead>
             <tbody>
                 <ng-container *ngFor="let data of expandTable.data">
-                    <ng-container *ngFor="let item of mapOfExpandedData[data.key]">
+                    <ng-container *ngFor="let item of mapOfExpandedData[data.id]">
                         <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
                             <td
                                 [nzIndentSize]="item.level! * 20"
-                                [nzShowExpand]="!!item.children"
+                                [nzShowExpand]="item.children.length > 0"
                                 [(nzExpand)]="item.expand"
-                                (nzExpandChange)="collapse(mapOfExpandedData[data.key], item, $event)"
+                                (nzExpandChange)="collapse(mapOfExpandedData[data.id], item, $event)"
                             >
-                                {{ item | json }}
+                                {{ item.data.name }}
+                            </td>
+                            <td>{{ item.data.id }}</td>
+                            <td>{{ item.data.url }}</td>
+                            <td>
+                                <I
+                                    appPermission
+                                    appFunction="SYSTEM_FUNCTION"
+                                    appAction="VIEW"
+                                    class="fa fa-info tblicon"
+                                    title="Xem chi tiết"
+                                    (click)="details(item.data)"
+                                ></I>
+                                <I
+                                    appPermission
+                                    appFunction="SYSTEM_FUNCTION"
+                                    appAction="UPDATE"
+                                    class="fa fa-edit tblicon"
+                                    title="Sửa"
+                                    (click)="edit(item.data)"
+                                ></I>
+                                <I
+                                    appPermission
+                                    appFunction="SYSTEM_FUNCTION"
+                                    appAction="DELETE"
+                                    class="fa fa-trash tblicon"
+                                    title="Xóa"
+                                    (click)="delete(item.data)"
+                                ></I>
+                                <I
+                                    appPermission
+                                    appFunction="SYSTEM_FUNCTION"
+                                    appAction="UPDATE"
+                                    class="fa fa-wrench tblicon"
+                                    title="quản lý hành động"
+                                    (click)="addRole(item.data)"
+                                ></I>
                             </td>
                         </tr>
                     </ng-container>
@@ -76,259 +141,93 @@
 </ng-template>
 
 <ng-template #createContent let-params>
-    <form nz-form [formGroup]="createForm">
+    <form nz-form [formGroup]="funcForm">
         <div class="alert alert-danger" role="alert" *ngIf="errorMsg">
             {{ errorMsg }}
         </div>
         <nz-form-item>
-            <nz-form-label [nzSpan]="6">Họ</nz-form-label>
+            <nz-form-label [nzSpan]="6">Mã</nz-form-label>
             <nz-form-control
                 [nzSpan]="14"
-                [nzValidateStatus]="firstName?.errors ? 'error' : 'success'"
+                [nzValidateStatus]="id?.errors ? 'error' : 'success'"
                 nzHasFeedback
-                [nzErrorTip]="firstNameErrorTpl"
+                [nzErrorTip]="idErrorTpl"
             >
-                <input nz-input type="text" formControlName="firstName" />
+                <input nz-input type="text" formControlName="id" />
             </nz-form-control>
-            <ng-template #firstNameErrorTpl>
+            <ng-template #idErrorTpl>
                 <app-validation-msg
-                    [entityForm]="createForm"
-                    fieldName="firstName"
+                    [entityForm]="funcForm"
+                    fieldName="id"
+                    [validationMessages]="validation_messages"
+                ></app-validation-msg>
+            </ng-template>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6">Tên chức năng</nz-form-label>
+            <nz-form-control
+                [nzSpan]="14"
+                [nzValidateStatus]="name?.errors ? 'error' : 'success'"
+                nzHasFeedback
+                [nzErrorTip]="nameErrorTpl"
+            >
+                <input nz-input type="text" formControlName="name" />
+            </nz-form-control>
+            <ng-template #nameErrorTpl>
+                <app-validation-msg
+                    [entityForm]="funcForm"
+                    fieldName="name"
                     [validationMessages]="validation_messages"
                 ></app-validation-msg>
             </ng-template>
         </nz-form-item>
 
         <nz-form-item>
-            <nz-form-label [nzSpan]="6">Tên</nz-form-label>
-            <nz-form-control
-                [nzSpan]="14"
-                [nzValidateStatus]="lastName?.errors ? 'error' : 'success'"
-                nzHasFeedback
-                [nzErrorTip]="lastNameErrorTpl"
-            >
-                <input nz-input type="text" formControlName="lastName" />
-            </nz-form-control>
-            <ng-template #lastNameErrorTpl>
-                <app-validation-msg
-                    [entityForm]="createForm"
-                    fieldName="lastName"
-                    [validationMessages]="validation_messages"
-                ></app-validation-msg>
-            </ng-template>
-        </nz-form-item>
-
-        <nz-form-item>
-            <nz-form-label [nzSpan]="6">Tên tài khoản</nz-form-label>
-            <nz-form-control
-                [nzSpan]="14"
-                [nzValidateStatus]="userName?.errors ? 'error' : 'success'"
-                nzHasFeedback
-                [nzErrorTip]="userNameErrorTpl"
-            >
-                <input nz-input type="text" formControlName="userName" />
-            </nz-form-control>
-            <ng-template #userNameErrorTpl>
-                <app-validation-msg
-                    [entityForm]="createForm"
-                    fieldName="userName"
-                    [validationMessages]="validation_messages"
-                ></app-validation-msg>
-            </ng-template>
-        </nz-form-item>
-
-        <nz-form-item>
-            <nz-form-label [nzSpan]="6">Mật khẩu</nz-form-label>
-            <nz-form-control
-                [nzSpan]="14"
-                [nzValidateStatus]="password?.errors ? 'error' : 'success'"
-                nzHasFeedback
-                [nzErrorTip]="passwordErrorTpl"
-            >
-                <input nz-input type="password" formControlName="password" />
-            </nz-form-control>
-            <ng-template #passwordErrorTpl>
-                <app-validation-msg
-                    [entityForm]="createForm"
-                    fieldName="password"
-                    [validationMessages]="validation_messages"
-                ></app-validation-msg>
-            </ng-template>
-        </nz-form-item>
-
-        <nz-form-item>
-            <nz-form-label [nzSpan]="6">Xác nhận mật khẩu</nz-form-label>
-            <nz-form-control
-                [nzSpan]="14"
-                [nzValidateStatus]="createForm.errors?.misMatch ? 'error' : 'success'"
-                nzHasFeedback
-                [nzErrorTip]="confirmPasswordErrorTpl"
-            >
-                <input nz-input type="password" formControlName="confirmPassword" />
-            </nz-form-control>
-            <ng-template #confirmPasswordErrorTpl>
-                <div class="alert alert-danger" role="alert" *ngIf="createForm.errors?.misMatch">
-                    Mật khẩu xác nhận không chính xác!
-                </div>
-            </ng-template>
-        </nz-form-item>
-
-        <nz-form-item>
-            <nz-form-label [nzSpan]="6">Email</nz-form-label>
-            <nz-form-control
-                [nzSpan]="14"
-                [nzValidateStatus]="email?.errors ? 'error' : 'success'"
-                nzHasFeedback
-                [nzErrorTip]="emailErrorTpl"
-            >
-                <input nz-input type="email" formControlName="email" />
-            </nz-form-control>
-            <ng-template #emailErrorTpl>
-                <app-validation-msg
-                    [entityForm]="createForm"
-                    fieldName="email"
-                    [validationMessages]="validation_messages"
-                ></app-validation-msg>
-            </ng-template>
-        </nz-form-item>
-
-        <nz-form-item>
-            <nz-form-label [nzSpan]="6">Số điện thoại</nz-form-label>
-            <nz-form-control
-                [nzSpan]="14"
-                [nzValidateStatus]="phoneNumber?.errors ? 'error' : 'success'"
-                nzHasFeedback
-                [nzErrorTip]="phoneNumberErrorTpl"
-            >
-                <input nz-input type="phone" formControlName="phoneNumber" />
-            </nz-form-control>
-            <ng-template #firstNameErrorTpl>
-                <app-validation-msg
-                    [entityForm]="createForm"
-                    fieldName="phoneNumber"
-                    [validationMessages]="validation_messages"
-                ></app-validation-msg>
-            </ng-template>
-        </nz-form-item>
-
-        <nz-form-item>
-            <nz-form-label [nzSpan]="6">Ngày sinh</nz-form-label>
-            <nz-form-control
-                [nzSpan]="14"
-                [nzValidateStatus]="dob?.errors ? 'error' : 'success'"
-                nzHasFeedback
-                [nzErrorTip]="dobErrorTpl"
-            >
-                <nz-date-picker nzFormat="dd/MM/yyyy" formControlName="dob"></nz-date-picker>
-            </nz-form-control>
-            <ng-template #dobErrorTpl>
-                <app-validation-msg
-                    [entityForm]="createForm"
-                    fieldName="dob"
-                    [validationMessages]="validation_messages"
-                ></app-validation-msg>
-            </ng-template>
-        </nz-form-item>
-    </form>
-</ng-template>
-
-<ng-template #editContent let-params>
-    <form nz-form [formGroup]="editForm">
-        <div class="alert alert-danger" role="alert" *ngIf="errorMsg">
-            {{ errorMsg }}
-        </div>
-        <nz-form-item>
-            <nz-form-label [nzSpan]="6">Tên tài khoản</nz-form-label>
+            <nz-form-label [nzSpan]="6">Chức năng cha</nz-form-label>
             <nz-form-control [nzSpan]="14">
-                <input nz-input type="text" disabled [value]="params?.value?.userName" />
+                <input nz-input type="text" formControlName="parentId" />
             </nz-form-control>
         </nz-form-item>
         <nz-form-item>
-            <nz-form-label [nzSpan]="6">Họ</nz-form-label>
+            <nz-form-label [nzSpan]="6">Đường dẫn</nz-form-label>
             <nz-form-control
                 [nzSpan]="14"
-                [nzValidateStatus]="firstNameEdit?.errors ? 'error' : 'success'"
+                [nzValidateStatus]="url?.errors ? 'error' : 'success'"
                 nzHasFeedback
-                [nzErrorTip]="firstNameEditErrorTpl"
+                [nzErrorTip]="urlErrorTpl"
             >
-                <input nz-input type="text" formControlName="firstName" />
+                <input nz-input type="text" formControlName="url" />
             </nz-form-control>
-            <ng-template #firstNameEditErrorTpl>
+            <ng-template #urlErrorTpl>
                 <app-validation-msg
-                    [entityForm]="editForm"
-                    fieldName="firstName"
+                    [entityForm]="funcForm"
+                    fieldName="url"
                     [validationMessages]="validation_messages"
                 ></app-validation-msg>
             </ng-template>
         </nz-form-item>
+
         <nz-form-item>
-            <nz-form-label [nzSpan]="6">Tên</nz-form-label>
-            <nz-form-control
-                [nzSpan]="14"
-                [nzValidateStatus]="lastNameEdit?.errors ? 'error' : 'success'"
-                nzHasFeedback
-                [nzErrorTip]="lastNameEditErrorTpl"
-            >
-                <input nz-input type="text" formControlName="lastName" />
+            <nz-form-label [nzSpan]="6">Class icon</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+                <input nz-input type="text" placeholder="ví dụ: fa-trash" formControlName="icon" />
             </nz-form-control>
-            <ng-template #lastNameEditErrorTpl>
-                <app-validation-msg
-                    [entityForm]="EditForm"
-                    fieldName="lastName"
-                    [validationMessages]="validation_messages"
-                ></app-validation-msg>
-            </ng-template>
         </nz-form-item>
+
         <nz-form-item>
-            <nz-form-label [nzSpan]="6">Email</nz-form-label>
+            <nz-form-label [nzSpan]="6">Thứ tự</nz-form-label>
             <nz-form-control
                 [nzSpan]="14"
-                [nzValidateStatus]="emailEdit?.errors ? 'error' : 'success'"
+                [nzValidateStatus]="sortOrder?.errors ? 'error' : 'success'"
                 nzHasFeedback
-                [nzErrorTip]="emailEditErrorTpl"
+                [nzErrorTip]="sortOrderErrorTpl"
             >
-                <input nz-input type="email" formControlName="email" />
+                <input nz-input type="number" formControlName="sortOrder" />
             </nz-form-control>
-            <ng-template #emailEditErrorTpl>
+            <ng-template #sortOrderErrorTpl>
                 <app-validation-msg
-                    [entityForm]="editForm"
-                    fieldName="email"
-                    [validationMessages]="validation_messages"
-                ></app-validation-msg>
-            </ng-template>
-        </nz-form-item>
-        <nz-form-item>
-            <nz-form-label [nzSpan]="6">Số điện thoại</nz-form-label>
-            <nz-form-control
-                [nzSpan]="14"
-                [nzValidateStatus]="phoneNumberEdit?.errors ? 'error' : 'success'"
-                nzHasFeedback
-                [nzErrorTip]="phoneNumberEditErrorTpl"
-            >
-                <input nz-input type="phone" formControlName="phoneNumber" />
-            </nz-form-control>
-            <ng-template #phoneNumberEditErrorTpl>
-                <app-validation-msg
-                    [entityForm]="editForm"
-                    fieldName="phoneNumber"
-                    [validationMessages]="validation_messages"
-                ></app-validation-msg>
-            </ng-template>
-        </nz-form-item>
-        <nz-form-item>
-            <nz-form-label [nzSpan]="6">Ngày sinh</nz-form-label>
-            <nz-form-control
-                [nzSpan]="14"
-                [nzValidateStatus]="dobEdit?.errors ? 'error' : 'success'"
-                nzHasFeedback
-                [nzErrorTip]="dobEditErrorTpl"
-            >
-                <nz-date-picker nzFormat="dd/MM/yyyy" formControlName="dob"></nz-date-picker>
-            </nz-form-control>
-            <ng-template #dobEditErrorTpl>
-                <app-validation-msg
-                    [entityForm]="editForm"
-                    fieldName="dob"
+                    [entityForm]="funcForm"
+                    fieldName="sortOrder"
                     [validationMessages]="validation_messages"
                 ></app-validation-msg>
             </ng-template>
@@ -435,10 +334,10 @@
     <button nz-button (click)="ref.destroy()">Đóng</button>
     <button
         type="submit"
-        [disabled]="createForm.invalid"
+        [disabled]="funcForm.invalid"
         nz-button
         nzType="primary"
-        (click)="saveChange(ref, ACTION_TYPE.ADDROLE)"
+        (click)="saveChange(ref, ACTION_TYPE.CREATE)"
         [nzLoading]="tplModalButtonLoading"
     >
         Lưu
@@ -447,45 +346,7 @@
 
 <ng-template #detailFooter let-ref="modalRef">
     <button nz-button (click)="ref.destroy()">Đóng</button>
-</ng-template> -->
-
-<nz-table
-    class="table table-sm table-bordered table table-hover"
-    [nzLoading]="loading"
-    [nzLoadingIndicator]="loadingSpin"
-    #expandTable
-    [nzData]="functions"
-    nzTableLayout="fixed"
-    [nzLoading]="loading"
->
-    <thead>
-        <tr>
-            <th class="bg-info tbl-head">Tên</th>
-            <th class="bg-info tbl-head">Mã</th>
-            <th class="bg-info tbl-head">Đường dẫn</th>
-            <th class="bg-info tbl-head">Tác vụ</th>
-        </tr>
-    </thead>
-    <tbody>
-        <ng-container *ngFor="let data of expandTable.data">
-            <ng-container *ngFor="let item of mapOfExpandedData[data.id]">
-                <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
-                    <td
-                        [nzIndentSize]="item.level! * 20"
-                        [nzShowExpand]="item.children.length > 0"
-                        [(nzExpand)]="item.expand"
-                        (nzExpandChange)="collapse(mapOfExpandedData[data.id], item, $event)"
-                    >
-                        {{ item.data.name }}
-                    </td>
-                    <td>{{ item.data.id }}</td>
-                    <td>{{ item.data.url }}</td>
-                    <td></td>
-                </tr>
-            </ng-container>
-        </ng-container>
-    </tbody>
-</nz-table>
+</ng-template>
 
 <ng-template #loadingSpin>
     <nz-spin [nzSpinning]="loading" [nzSize]="'large'">

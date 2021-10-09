@@ -87,16 +87,6 @@
                                 title="Phê duyệt"
                                 (click)="approve(data)"
                             ></I>
-                            
-                            <I
-                                *ngIf="actions.includes(ACTION_TYPE.DELETE)"
-                                appPermission
-                                [appFunction]="functionName"
-                                appAction="DELETE"
-                                class="fa fa-trash tblicon"
-                                title="Xóa"
-                                (click)="delete(data)"
-                            ></I>
                             <I
                                 *ngIf="actions.includes(ACTION_TYPE.ADDROLE)"
                                 appPermission

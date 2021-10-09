@@ -23,7 +23,7 @@ import { FunctionsComponent } from './functions/functions.component';
 import { UsersComponent } from './users/users.component';
 import { RolesComponent } from './roles/roles.component';
 import { PermissionsComponent } from './permissions/permissions.component';
-import {  NotificationService, TableModule, ValidationMsgModule } from '../../shared';
+import {  NotificationService, PermissionModule, TableModule, ValidationMsgModule } from '../../shared';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
@@ -34,7 +34,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     FunctionsComponent,
     UsersComponent,
     RolesComponent,
-    PermissionsComponent,
+    PermissionsComponent
   ],
   imports: [
     CommonModule,
@@ -55,7 +55,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     NzBreadCrumbModule,
     NzTransferModule,
     NzTableModule,
-    NzSpinModule
+    NzSpinModule,
+    PermissionModule
   ],
   providers: [
     NotificationService,

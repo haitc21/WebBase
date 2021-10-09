@@ -1,3 +1,4 @@
+import { map } from 'rxjs/operators';
 import {
   FunctionModel,
   COL_DATA_TYPE,
@@ -23,7 +24,8 @@ export class FunctionsComponent implements OnInit, OnDestroy {
 
   private subscription = new Subscription();
   public loading = false;
-  public functions: TreeMolde[] = [];
+  public functions: FunctionModel[] = [];
+  public dataDisplay: TreeMolde[] = [];
   public keyword = '';
   COL_DATA_TYPE = COL_DATA_TYPE;
   ACTION_TYPE = ACTION_TYPE;
@@ -45,45 +47,54 @@ export class FunctionsComponent implements OnInit, OnDestroy {
   }
 
   // Form
-  createForm!: FormGroup;
-  editForm!: FormGroup;
+  funcForm!: FormGroup;
   errorMsg = '';
-  get userName() {
-    return this.createForm.get('userName');
+  get id() {
+    return this.funcForm.get('id');
   }
-  // Validate
+  get name() {
+    return this.funcForm.get('name');
+  }
+  get parentId() {
+    return this.funcForm.get('parentId');
+  }
+  
+  get url() {
+    return this.funcForm.get('url');
+  }
+  
+  get icon() {
+    return this.funcForm.get('icon');
+  }
+  
+  get sortOrder() {
+    return this.funcForm.get('sortOrder');
+  }
+  // Validate 
   noSpecial: RegExp = /^[^<>*!_~]+$/;
   validation_messages = {
-    'firstName': [
-      { type: 'required', message: 'Bạn phải nhập họ người dùng' },
-      { type: 'maxlength', message: 'Bạn không được nhập quá 255 kí tự' }
-    ],
-    'lastName': [
-      { type: 'required', message: 'Bạn phải nhập tên người dùng' },
-      { type: 'maxlength', message: 'Bạn không được nhập quá 255 kí tự' }
-    ],
-    'userName': [
-      { type: 'required', message: 'Bạn phải nhập tên tài khoản' },
+    'name': [
+      { type: 'required', message: 'Bạn phải nhập tên trang' },
       { type: 'minlength', message: 'Bạn phải nhập ít nhất 3 kí tự' },
       { type: 'maxlength', message: 'Bạn không được nhập quá 255 kí tự' }
     ],
-    'password': [
-      { type: 'required', message: 'Bạn phải nhập tên tài khoản' },
-      { type: 'minlength', message: 'Bạn phải nhập ít nhất 6 kí tự' },
-      { type: 'maxlength', message: 'Bạn không được nhập quá 255 kí tự' },
-      { type: 'pattern', message: 'Mật khẩu không đủ độ phức tạp' }
+    'id': [
+      { type: 'required', message: 'Bạn phải nhập mã duy nhất' }
     ],
-    'email': [
-      { type: 'required', message: 'Bạn phải nhập email' },
-      { type: 'maxlength', message: 'Bạn không được nhập quá 255 kí tự' },
-      { type: 'pattern', message: 'Bạn phải nhập đúng định dạng Email' }
+    'url': [
+      { type: 'required', message: 'Bạn phải nhập đường dẫn' }
+    ],
+    'sortOrder': [
+      { type: 'required', message: 'Bạn phải nhập thứ tự' }
     ]
   };
 
   @ViewChild('closeIcon') closeIconTpl!: TemplateRef<any>;
+
   @ViewChild('editTitle') editTitleTpl!: TemplateRef<any>;
   @ViewChild('editContent') editContentTpl!: TemplateRef<any>;
   @ViewChild('editFooter') editFooterTpl!: TemplateRef<any>;
+
   @ViewChild('detailTitle') detailTitleTpl!: TemplateRef<any>;
   @ViewChild('detailContent') detailContentTpl!: TemplateRef<any>;
   @ViewChild('detailFooter') detailFooterTpl!: TemplateRef<any>;
@@ -100,10 +111,39 @@ export class FunctionsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadData();
-    // this.createForm = this.fb.group();
+    this.funcForm = this.fb.group({
+      'id': new FormControl('', Validators.required),
+      'parentId': new FormControl(),
+      'name': new FormControl('', Validators.compose([
+        Validators.required,
+        Validators.maxLength(255),
+        Validators.minLength(3)
+      ])),
+      'url': new FormControl('', Validators.required),
+      'icon': new FormControl(),
+      'sortOrder': new FormControl(1, Validators.required)
+    });
   }
 
+  loadData() {
+    this.loading = true;
+    this.subscription.add(this._functionService.getAll()
+      .subscribe((response: FunctionModel[]) => {
+        this.functions = response;
+        this.dataDisplay = this.utilitiesService.UnflatteringForTree(response);
+        // console.log(this.functions);
+        this.dataDisplay.forEach(item => {
+          this.mapOfExpandedData[item.id] = this.utilitiesService.convertTreeToList(item);
+        });
+        // console.log(this.mapOfExpandedData);
+        this.loading = false;
+      }, error => {
+        this.loading = false;
+        this.notificationService.showError(error);
+      }));
+  }
 
+  // tree
   collapse(array: TreeMolde[], data: TreeMolde, $event: boolean): void {
     if (!$event) {
       if (data.children) {
@@ -128,25 +168,26 @@ export class FunctionsComponent implements OnInit, OnDestroy {
   filterOption(inputValue: string, item: any): boolean {
     return item.title.indexOf(inputValue) > -1;
   }
-  loadData() {
-    this.loading = true;
-    this.subscription.add(this._functionService.getAll()
-      .subscribe((response: FunctionModel[]) => {
-        this.functions = this.utilitiesService.UnflatteringForTree(response);
-        // console.log(this.functions);
-        this.functions.forEach(item => {
-          this.mapOfExpandedData[item.id] = this.utilitiesService.convertTreeToList(item);
-        });
-        // console.log(this.mapOfExpandedData);
-        this.loading = false;
-      }, error => {
-        this.loading = false;
-        this.notificationService.showError(error);
-      }));
-  }
 
   search() {
-    this.loadData();
+    this.keyword = this.keyword.toUpperCase();
+    this.mapOfExpandedData = {};
+    console.log(this.mapOfExpandedData);
+    if (this.keyword === '') {
+      this.dataDisplay = this.utilitiesService.UnflatteringForTree(this.functions);;
+      this.dataDisplay.forEach(item => {
+        this.mapOfExpandedData[item.id] = this.utilitiesService.convertTreeToList(item);
+      });
+    }
+    else {
+      let data = this.functions.filter(x =>
+        x.id.includes(this.keyword)
+        || x.name.toUpperCase().includes(this.keyword));
+      this.dataDisplay = this.utilitiesService.UnflatteringForTree(data);
+      this.dataDisplay.forEach(item => {
+        this.mapOfExpandedData[item.id] = this.utilitiesService.convertTreeToList(item);
+      });
+    }
   }
   delete(entity: FunctionModel) {
     this.notificationService.showConfirmation(MessageConstants.CONFIRM_DELETE_MSG,
@@ -163,7 +204,7 @@ export class FunctionsComponent implements OnInit, OnDestroy {
     }));
   }
   update(entity: FunctionModel) {
-    this.editForm.patchValue({
+    this.funcForm.patchValue({
       id: entity.id,
     });
     this.createTplModal(this.editTitleTpl, this.editContentTpl, this.editFooterTpl, entity);
@@ -201,8 +242,7 @@ export class FunctionsComponent implements OnInit, OnDestroy {
   //   this.createTplModal(this.addRoleTitleTpl, this.addRoleContentTpl, this.addRoleFooterTpl, entity);
   // }
   restValue() {
-    this.createForm.reset();
-    this.editForm.reset();
+    this.funcForm.reset();
     this.errorMsg = '';
     this.cmdInFunc = [];
     this.funcIdAddCmd = '';
@@ -228,60 +268,60 @@ export class FunctionsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // saveChange(modelRef: NzModalRef, action: number): void {
-  //   this.tplModalButtonLoading = true;
-  //   if (action === this.ACTION_TYPE.UPDATE) {
-  //     this.subscription.add(
-  //       this._functionService.update(this.editForm.value.id, this.editForm.value)
-  //         .subscribe(() => {
-  //           this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
-  //           this.restValue();
-  //           this.tplModalButtonLoading = false;
-  //           modelRef.destroy();
-  //           this.loadData();
-  //         }, error => {
-  //           this.errorMsg = error.replace('<br/>', '');
-  //           this.tplModalButtonLoading = false;
-  //           setTimeout(() => { this.errorMsg = null; }, 5000);
-  //         })
-  //     );
-  //   }
-  //   else if (action === this.ACTION_TYPE.CREATE) {
-  //     this.subscription.add(
-  //       this._functionService.add(this.createForm.value)
-  //         .subscribe(() => {
-  //           this.notificationService.showSuccess(MessageConstants.CREATED_OK_MSG);
-  //           this.restValue();
-  //           this.tplModalButtonLoading = false;
-  //           modelRef.destroy();
-  //           this.loadData();
-  //         }, error => {
-  //           this.errorMsg = error.replace('<br/>', '');
-  //           this.tplModalButtonLoading = false;
-  //           setTimeout(() => { this.errorMsg = null; }, 5000);
-  //         })
-  //     );
-  //   }
-  //   else if (action === this.ACTION_TYPE.ADDROLE) {
-  //     let assignRolesToUser = {
-  //       roleNames: this.cmdInFunc
-  //     }
-  //     this.subscription.add(
-  //       this._functionService.assignRolesToUser(this.funcIdAddCmd, assignRolesToUser)
-  //         .subscribe(() => {
-  //           this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
-  //           this.restValue();
-  //           this.tplModalButtonLoading = false;
-  //           modelRef.destroy();
-  //           this.loadData();
-  //         }, error => {
-  //           this.errorMsg = error.replace('<br/>', '');
-  //           this.tplModalButtonLoading = false;
-  //           setTimeout(() => { this.errorMsg = null; }, 5000);
-  //         })
-  //     );
-  //   }
-  // }
+  saveChange(modelRef: NzModalRef, action: number): void {
+    this.tplModalButtonLoading = true;
+    // if (action === this.ACTION_TYPE.UPDATE) {
+    //   this.subscription.add(
+    //     this._functionService.update(this.funcForm.value.id, this.funcForm.value)
+    //       .subscribe(() => {
+    //         this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
+    //         this.restValue();
+    //         this.tplModalButtonLoading = false;
+    //         modelRef.destroy();
+    //         this.loadData();
+    //       }, error => {
+    //         this.errorMsg = error.replace('<br/>', '');
+    //         this.tplModalButtonLoading = false;
+    //         setTimeout(() => { this.errorMsg = null; }, 5000);
+    //       })
+    //   );
+    // }
+     if (action === this.ACTION_TYPE.CREATE) {
+      this.subscription.add(
+        this._functionService.add(this.funcForm.value)
+          .subscribe(() => {
+            this.notificationService.showSuccess(MessageConstants.CREATED_OK_MSG);
+            this.restValue();
+            this.tplModalButtonLoading = false;
+            modelRef.destroy();
+            this.loadData();
+          }, error => {
+            this.errorMsg = error.replace('<br/>', '');
+            this.tplModalButtonLoading = false;
+            setTimeout(() => { this.errorMsg = null; }, 5000);
+          })
+      );
+    }
+    // else if (action === this.ACTION_TYPE.ADDROLE) {
+    //   let assignRolesToUser = {
+    //     roleNames: this.cmdInFunc
+    //   }
+    //   this.subscription.add(
+    //     this._functionService.assignRolesToUser(this.funcIdAddCmd, assignRolesToUser)
+    //       .subscribe(() => {
+    //         this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
+    //         this.restValue();
+    //         this.tplModalButtonLoading = false;
+    //         modelRef.destroy();
+    //         this.loadData();
+    //       }, error => {
+    //         this.errorMsg = error.replace('<br/>', '');
+    //         this.tplModalButtonLoading = false;
+    //         setTimeout(() => { this.errorMsg = null; }, 5000);
+    //       })
+    //   );
+    // }
+  }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
