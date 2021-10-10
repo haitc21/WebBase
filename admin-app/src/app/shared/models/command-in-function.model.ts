@@ -1,4 +1,6 @@
+import { CommandModel } from "./command.model";
+
 export class CommandInFunctionModel {
-    cmdInFunc: string[];
-    cmdNotInFunc: string[];
+    cmdInFunc: CommandModel[];
+    cmdNotInFunc: CommandModel[];
 }

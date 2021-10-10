@@ -14,7 +14,7 @@
                     appAction="CREATE"
                     nz-button
                     nzType="primary"
-                    (click)="createTplModal(createTitle, createContent, createFooter)"
+                    (click)="createTplModal(createTitle, formContent, createFooter)"
                 >
                     <span>Thêm</span>
                 </button>
@@ -95,7 +95,7 @@
                                     appAction="UPDATE"
                                     class="fa fa-edit tblicon"
                                     title="Sửa"
-                                    (click)="edit(item.data)"
+                                    (click)="update(item.data)"
                                 ></I>
                                 <I
                                     appPermission
@@ -111,7 +111,7 @@
                                     appAction="UPDATE"
                                     class="fa fa-wrench tblicon"
                                     title="quản lý hành động"
-                                    (click)="addRole(item.data)"
+                                    (click)="addComdToFunc(item.data)"
                                 ></I>
                             </td>
                         </tr>
@@ -136,18 +136,19 @@
 <ng-template #detailTitle>
     <h3>Chi tiết chức năng</h3>
 </ng-template>
-<ng-template #addRoleTitle>
+<ng-template #addCmdTitle>
     <h3>Quản lý hành động</h3>
 </ng-template>
 
-<ng-template #createContent let-params>
+<ng-template #formContent let-params>
     <form nz-form [formGroup]="funcForm">
         <div class="alert alert-danger" role="alert" *ngIf="errorMsg">
             {{ errorMsg }}
         </div>
         <nz-form-item>
-            <nz-form-label [nzSpan]="6">Mã</nz-form-label>
+            <nz-form-label [nzSpan]="6">Mã chức năng</nz-form-label>
             <nz-form-control
+                *ngIf="!params?.value?.id"
                 [nzSpan]="14"
                 [nzValidateStatus]="id?.errors ? 'error' : 'success'"
                 nzHasFeedback
@@ -155,8 +156,12 @@
             >
                 <input nz-input type="text" formControlName="id" />
             </nz-form-control>
+            <div nz-col nzSpan="14" *ngIf="params?.value?.id">
+                <span>{{ params?.value?.id }}</span>
+            </div>
             <ng-template #idErrorTpl>
                 <app-validation-msg
+                    *ngIf="!params?.value?.id"
                     [entityForm]="funcForm"
                     fieldName="id"
                     [validationMessages]="validation_messages"
@@ -234,68 +239,13 @@
         </nz-form-item>
     </form>
 </ng-template>
-
-<ng-template #detailContent let-params>
-    <div nz-row>
-        <div nz-col nzSpan="6">
-            <label>Họ:</label>
-        </div>
-        <div nz-col nzSpan="14">
-            <span>{{ params.value.firstName }}</span>
-        </div>
-    </div>
-    <div nz-row>
-        <div nz-col nzSpan="6">
-            <label>Tên:</label>
-        </div>
-        <div nz-col nzSpan="14">
-            <span>{{ params.value.lastName }}</span>
-        </div>
-    </div>
-
-    <div nz-row>
-        <div nz-col nzSpan="6">
-            <label>Tên tài khoản:</label>
-        </div>
-        <div nz-col nzSpan="14">
-            <span>{{ params.value.userName }}</span>
-        </div>
-    </div>
-    <div nz-row>
-        <div nz-col nzSpan="6">
-            <label>Email:</label>
-        </div>
-        <div nz-col nzSpan="14">
-            <span>{{ params.value.email }}</span>
-        </div>
-    </div>
-
-    <div nz-row>
-        <div nz-col nzSpan="6">
-            <label>Số điện thoại:</label>
-        </div>
-        <div nz-col nzSpan="14">
-            <span>{{ params.value.phoneNumber }}</span>
-        </div>
-    </div>
-
-    <div nz-row>
-        <div nz-col nzSpan="6">
-            <label>Ngày sinh:</label>
-        </div>
-        <div nz-col nzSpan="14">
-            <span>{{ params.value.dob | date: 'dd/MM/yyyy' }}</span>
-        </div>
-    </div>
-</ng-template>
-
-<ng-template #addRoleContent let-params>
+<ng-template #addCmdContent let-params>
     <div class="alert alert-danger" role="alert" *ngIf="errorMsg">
         {{ errorMsg }}
     </div>
     <nz-transfer
-        [nzDataSource]="listRole"
-        [nzTitles]="['Quyền chưa thêm', 'Quyền được thêm']"
+        [nzDataSource]="lstCmd"
+        [nzTitles]="['Hành động chưa thêm', 'Hành động được thêm']"
         [nzListStyle]="transferStyles"
         nzShowSearch
         [nzFilterOption]="filterOption"
@@ -303,11 +253,65 @@
     ></nz-transfer>
 </ng-template>
 
+<ng-template #detailContent let-params>
+    <div nz-row>
+        <div nz-col nzSpan="6">
+            <label>Mã chức năng:</label>
+        </div>
+        <div nz-col nzSpan="14">
+            <span>{{ params.value.id }}</span>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="6">
+            <label>Tên chức năng:</label>
+        </div>
+        <div nz-col nzSpan="14">
+            <span>{{ params.value.name }}</span>
+        </div>
+    </div>
+
+    <div nz-row>
+        <div nz-col nzSpan="6">
+            <label>Mã chức năng cha:</label>
+        </div>
+        <div nz-col nzSpan="14">
+            <span>{{ params.value.parentId }}</span>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="6">
+            <label>Đường dẫn:</label>
+        </div>
+        <div nz-col nzSpan="14">
+            <span>{{ params.value.url }}</span>
+        </div>
+    </div>
+
+    <div nz-row>
+        <div nz-col nzSpan="6">
+            <label>Class icon:</label>
+        </div>
+        <div nz-col nzSpan="14">
+            <span>{{ params.value.icon }}</span>
+        </div>
+    </div>
+
+    <div nz-row>
+        <div nz-col nzSpan="6">
+            <label>Thư tự:</label>
+        </div>
+        <div nz-col nzSpan="14">
+            <span>{{ params.value.sortOrder }}</span>
+        </div>
+    </div>
+</ng-template>
+
 <ng-template #editFooter let-ref="modalRef">
     <button nz-button (click)="ref.destroy()">Đóng</button>
     <button
         type="submit"
-        [disabled]="editForm.invalid"
+        [disabled]="funcForm.invalid"
         nz-button
         nzType="primary"
         (click)="saveChange(ref, ACTION_TYPE.UPDATE)"
@@ -317,7 +321,7 @@
     </button>
 </ng-template>
 
-<ng-template #addRoleFooter let-ref="modalRef">
+<ng-template #addCmdFooter let-ref="modalRef">
     <button nz-button (click)="ref.destroy()">Đóng</button>
     <button
         type="submit"

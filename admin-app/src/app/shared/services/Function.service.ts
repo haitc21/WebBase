@@ -58,8 +58,8 @@ export class FunctionService extends BaseService {
   }
 
   getAllCommandsByFunctionId(functionId: string) {
-      return this.http.get<CommandInFunctionModel[]>(`${environment.apiUrl}/api/functions/${functionId}/commands`, { headers: this._sharedHeaders })
-          .pipe(map((response: CommandInFunctionModel[]) => {
+      return this.http.get<CommandInFunctionModel>(`${environment.apiUrl}/api/functions/${functionId}/commands`, { headers: this._sharedHeaders })
+          .pipe(map((response: CommandInFunctionModel) => {
               return response;
           }), catchError(this.handleError));
   }

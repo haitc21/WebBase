@@ -7,7 +7,8 @@ import {
   MessageConstants,
   UtilitiesService,
   FunctionService,
-  TreeMolde
+  TreeMolde,
+  CommandInFunctionModel
 } from './../../../shared';
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
@@ -35,9 +36,9 @@ export class FunctionsComponent implements OnInit, OnDestroy {
   // Modal
   tplModalButtonLoading = false;
 
-  //Transfer riley
+  //Transfer 
   lstCmd: TransferItem[] = [];
-  cmdInFunc: string[] = [];
+  commandInFunction: string[] = [];
   funcIdAddCmd = '';
   transferStyles = {
     "width": "100%",
@@ -58,15 +59,15 @@ export class FunctionsComponent implements OnInit, OnDestroy {
   get parentId() {
     return this.funcForm.get('parentId');
   }
-  
+
   get url() {
     return this.funcForm.get('url');
   }
-  
+
   get icon() {
     return this.funcForm.get('icon');
   }
-  
+
   get sortOrder() {
     return this.funcForm.get('sortOrder');
   }
@@ -92,16 +93,16 @@ export class FunctionsComponent implements OnInit, OnDestroy {
   @ViewChild('closeIcon') closeIconTpl!: TemplateRef<any>;
 
   @ViewChild('editTitle') editTitleTpl!: TemplateRef<any>;
-  @ViewChild('editContent') editContentTpl!: TemplateRef<any>;
+  @ViewChild('formContent') formContentTpl!: TemplateRef<any>;
   @ViewChild('editFooter') editFooterTpl!: TemplateRef<any>;
 
   @ViewChild('detailTitle') detailTitleTpl!: TemplateRef<any>;
   @ViewChild('detailContent') detailContentTpl!: TemplateRef<any>;
   @ViewChild('detailFooter') detailFooterTpl!: TemplateRef<any>;
 
-  @ViewChild('addRoleTitle') addRoleTitleTpl!: TemplateRef<any>;
-  @ViewChild('addRoleContent') addRoleContentTpl!: TemplateRef<any>;
-  @ViewChild('addRoleFooter') addRoleFooterTpl!: TemplateRef<any>;
+  @ViewChild('addCmdTitle') addCmdTitleTpl!: TemplateRef<any>;
+  @ViewChild('addCmdContent') addCmdContentTpl!: TemplateRef<any>;
+  @ViewChild('addCmdFooter') addCmdFooterTpl!: TemplateRef<any>;
 
   constructor(private _functionService: FunctionService,
     private notificationService: NotificationService,
@@ -131,11 +132,9 @@ export class FunctionsComponent implements OnInit, OnDestroy {
       .subscribe((response: FunctionModel[]) => {
         this.functions = response;
         this.dataDisplay = this.utilitiesService.UnflatteringForTree(response);
-        // console.log(this.functions);
         this.dataDisplay.forEach(item => {
           this.mapOfExpandedData[item.id] = this.utilitiesService.convertTreeToList(item);
         });
-        // console.log(this.mapOfExpandedData);
         this.loading = false;
       }, error => {
         this.loading = false;
@@ -157,22 +156,23 @@ export class FunctionsComponent implements OnInit, OnDestroy {
       }
     }
   }
+  // Transfer
   change(ret: {}): void {
     let lst = this.lstCmd.filter(x => x.direction == 'right');
-    this.cmdInFunc = [];
+    this.commandInFunction = [];
     lst.forEach(x => {
-      this.cmdInFunc.push(x.title);
+      this.commandInFunction.push(x.key);
     });
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filterOption(inputValue: string, item: any): boolean {
-    return item.title.indexOf(inputValue) > -1;
+    let keySearch = inputValue.toUpperCase();
+    return item.title.indexOf(inputValue) > -1 || item.key.indexOf(keySearch) > -1;
   }
 
   search() {
     this.keyword = this.keyword.toUpperCase();
     this.mapOfExpandedData = {};
-    console.log(this.mapOfExpandedData);
     if (this.keyword === '') {
       this.dataDisplay = this.utilitiesService.UnflatteringForTree(this.functions);;
       this.dataDisplay.forEach(item => {
@@ -206,45 +206,51 @@ export class FunctionsComponent implements OnInit, OnDestroy {
   update(entity: FunctionModel) {
     this.funcForm.patchValue({
       id: entity.id,
+      name: entity.name,
+      parentId: entity.parentId,
+      url: entity.url,
+      icon: entity.icon,
+      sortOrder: entity.sortOrder
     });
-    this.createTplModal(this.editTitleTpl, this.editContentTpl, this.editFooterTpl, entity);
+    this.createTplModal(this.editTitleTpl, this.formContentTpl, this.editFooterTpl, entity);
   }
+
   details(entity: FunctionModel) {
     this.createTplModal(this.detailTitleTpl, this.detailContentTpl, this.detailFooterTpl, entity);
   }
-  // async addRole(entity: FunctionModel) {
-  //   this.errorMsg = '';
-  //   this.funcIdAddCmd = entity.id;
-  //   let userRoles = await this._functionService.getUserRoles(entity.id)
-  //     .toPromise()
-  //     .catch(error => {
-  //       this.notificationService.showError(error);
-  //     });
-  //   if (this.errorMsg === '') {
-  //     userRoles = userRoles as UserRoleModel;
-  //     userRoles?.roles.forEach(role => {
-  //       this.lstCmd.push({
-  //         key: role,
-  //         title: role,
-  //         description: role,
-  //         direction: 'right'
-  //       });
-  //     });
-  //     userRoles?.roleNotHas.forEach(role => {
-  //       this.lstCmd.push({
-  //         key: role,
-  //         title: role,
-  //         description: role,
-  //         direction: 'left'
-  //       });
-  //     });
-  //   }
-  //   this.createTplModal(this.addRoleTitleTpl, this.addRoleContentTpl, this.addRoleFooterTpl, entity);
-  // }
+  async addComdToFunc(entity: FunctionModel) {
+    this.errorMsg = '';
+    this.funcIdAddCmd = entity.id;
+    let lstCmdFunc = await this._functionService.getAllCommandsByFunctionId(entity.id)
+      .toPromise()
+      .catch(error => {
+        this.notificationService.showError(error);
+      });
+    if (this.errorMsg === '') {
+      lstCmdFunc = lstCmdFunc! as CommandInFunctionModel;
+      lstCmdFunc?.cmdInFunc.forEach(cmd => {
+        this.lstCmd.push({
+          key: cmd.id,
+          title: cmd.name,
+          description: cmd.name,
+          direction: 'right'
+        });
+      });
+      lstCmdFunc?.cmdNotInFunc.forEach(cmd => {
+        this.lstCmd.push({
+          key: cmd.id,
+          title: cmd.name,
+          description: cmd.name,
+          direction: 'left'
+        });
+      });
+    }
+    this.createTplModal(this.addCmdTitleTpl, this.addCmdContentTpl, this.addCmdFooterTpl, entity);
+  }
   restValue() {
     this.funcForm.reset();
     this.errorMsg = '';
-    this.cmdInFunc = [];
+    this.commandInFunction = [];
     this.funcIdAddCmd = '';
     this.lstCmd = [];
   }
@@ -270,23 +276,23 @@ export class FunctionsComponent implements OnInit, OnDestroy {
 
   saveChange(modelRef: NzModalRef, action: number): void {
     this.tplModalButtonLoading = true;
-    // if (action === this.ACTION_TYPE.UPDATE) {
-    //   this.subscription.add(
-    //     this._functionService.update(this.funcForm.value.id, this.funcForm.value)
-    //       .subscribe(() => {
-    //         this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
-    //         this.restValue();
-    //         this.tplModalButtonLoading = false;
-    //         modelRef.destroy();
-    //         this.loadData();
-    //       }, error => {
-    //         this.errorMsg = error.replace('<br/>', '');
-    //         this.tplModalButtonLoading = false;
-    //         setTimeout(() => { this.errorMsg = null; }, 5000);
-    //       })
-    //   );
-    // }
-     if (action === this.ACTION_TYPE.CREATE) {
+    if (action === this.ACTION_TYPE.UPDATE) {
+      this.subscription.add(
+        this._functionService.update(this.funcForm.value.id, this.funcForm.value)
+          .subscribe(() => {
+            this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
+            this.restValue();
+            this.tplModalButtonLoading = false;
+            modelRef.destroy();
+            this.loadData();
+          }, error => {
+            this.errorMsg = error.replace('<br/>', '');
+            this.tplModalButtonLoading = false;
+            setTimeout(() => { this.errorMsg = null; }, 5000);
+          })
+      );
+    }
+    else if (action === this.ACTION_TYPE.CREATE) {
       this.subscription.add(
         this._functionService.add(this.funcForm.value)
           .subscribe(() => {
@@ -302,25 +308,25 @@ export class FunctionsComponent implements OnInit, OnDestroy {
           })
       );
     }
-    // else if (action === this.ACTION_TYPE.ADDROLE) {
-    //   let assignRolesToUser = {
-    //     roleNames: this.cmdInFunc
-    //   }
-    //   this.subscription.add(
-    //     this._functionService.assignRolesToUser(this.funcIdAddCmd, assignRolesToUser)
-    //       .subscribe(() => {
-    //         this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
-    //         this.restValue();
-    //         this.tplModalButtonLoading = false;
-    //         modelRef.destroy();
-    //         this.loadData();
-    //       }, error => {
-    //         this.errorMsg = error.replace('<br/>', '');
-    //         this.tplModalButtonLoading = false;
-    //         setTimeout(() => { this.errorMsg = null; }, 5000);
-    //       })
-    //   );
-    // }
+    else if (action === this.ACTION_TYPE.ADDROLE) {
+      let assignCmdToFunc = {
+        commandIds: this.commandInFunction
+      }
+      this.subscription.add(
+        this._functionService.addCommandsToFunction(this.funcIdAddCmd, assignCmdToFunc)
+          .subscribe(() => {
+            this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
+            this.restValue();
+            this.tplModalButtonLoading = false;
+            modelRef.destroy();
+            this.loadData();
+          }, error => {
+            this.errorMsg = error.replace('<br/>', '');
+            this.tplModalButtonLoading = false;
+            setTimeout(() => { this.errorMsg = null; }, 5000);
+          })
+      );
+    }
   }
 
   ngOnDestroy(): void {
