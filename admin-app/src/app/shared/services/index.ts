@@ -5,3 +5,5 @@ export * from './role.service';
 export * from './utilitie.service';
 export * from './notification.service';
 export * from './function.service';
+export * from './command.service';
+export * from './permission.service';
