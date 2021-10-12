@@ -26,6 +26,11 @@ import { PermissionsComponent } from './permissions/permissions.component';
 import {  NotificationService, PermissionModule, TableModule, ValidationMsgModule } from '../../shared';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+// ngx-bootstrap/modal
+import { BsModalService, ModalModule } from 'ngx-bootstrap/modal';
+
+// primeng
+import {PanelModule} from 'primeng/panel';
 
 
 @NgModule({
@@ -56,11 +61,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     NzTransferModule,
     NzTableModule,
     NzSpinModule,
-    PermissionModule
+    PermissionModule,
+
+    ModalModule,
+    PanelModule
   ],
   providers: [
     NotificationService,
-    DatePipe
+    DatePipe,
+    BsModalService
   ]
 })
 export class SystemsModule { }
