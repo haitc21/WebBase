@@ -23,14 +23,25 @@ import { FunctionsComponent } from './functions/functions.component';
 import { UsersComponent } from './users/users.component';
 import { RolesComponent } from './roles/roles.component';
 import { PermissionsComponent } from './permissions/permissions.component';
-import {  NotificationService, PermissionModule, TableModule, ValidationMsgModule } from '../../shared';
+import { NotificationService, PermissionModule, TableModule, ValidationMsgModule } from '../../shared';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // ngx-bootstrap/modal
 import { BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 
 // primeng
-import {PanelModule} from 'primeng/panel';
+import { PanelModule } from 'primeng/panel';
+import { TableModule as primeTblModule } from 'primeng/table';
+import { PaginatorModule } from 'primeng/paginator';
+import { BlockUIModule } from 'primeng/blockui';
+import { InputTextModule } from 'primeng/inputtext';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CalendarModule } from 'primeng/calendar';
+import { CheckboxModule } from 'primeng/checkbox';
+import { KeyFilterModule } from 'primeng/keyfilter';
+import { TreeTableModule } from 'primeng/treetable';
+import { DropdownModule } from 'primeng/dropdown';
+
 
 
 @NgModule({
@@ -64,7 +75,17 @@ import {PanelModule} from 'primeng/panel';
     PermissionModule,
 
     ModalModule,
-    PanelModule
+    PanelModule,
+    primeTblModule,
+    PaginatorModule,
+    BlockUIModule,
+    InputTextModule,
+    ProgressSpinnerModule,
+    CalendarModule,
+    CheckboxModule,
+    KeyFilterModule,
+    TreeTableModule,
+    DropdownModule
   ],
   providers: [
     NotificationService,
