@@ -3,8 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { FunctionsComponent } from './functions/functions.component';
 import { PermissionsComponent } from './permissions/permissions.component';
 import { RolesComponent } from './roles/roles.component';
-import { SystemsComponent } from './systems.component';
 import { UsersComponent } from './users/users.component';
+import { AuthGuard } from '../../shared/guard';
 
 const routes: Routes = [
   {
@@ -16,29 +16,37 @@ const routes: Routes = [
     path: 'functions',
     component: FunctionsComponent,
     data: {
-      customBreadcrumb: 'Chức năng'
-    }
+      customBreadcrumb: 'Chức năng',
+      functionCode: 'SYSTEM_FUNCTION'
+    },
+    canActivate: [AuthGuard]
   },
   {
     path: 'users',
     component: UsersComponent,
     data: {
-      customBreadcrumb: 'Người dùng'
-    }
+      customBreadcrumb: 'Người dùng',
+      functionCode: 'SYSTEM_USER'
+    },
+    canActivate: [AuthGuard]
   },
   {
     path: 'roles',
     component: RolesComponent,
     data: {
-      customBreadcrumb: 'Nhóm quyền'
-    }
+      customBreadcrumb: 'Nhóm quyền',
+      functionCode: 'SYSTEM_ROLE'
+    },
+    canActivate: [AuthGuard]
   },
   {
     path: 'permissions',
     component: PermissionsComponent,
     data: {
-      customBreadcrumb: 'Quyền hạn'
-    }
+      customBreadcrumb: 'Quyền hạn',
+      functionCode: 'SYSTEM_PERMISSION'
+    },
+    canActivate: [AuthGuard]
   }
 ];
 

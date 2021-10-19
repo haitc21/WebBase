@@ -185,7 +185,7 @@ namespace WebBase.Controllers
             //Get hash code for the ID field.
             int hashProductId = (permission.CommandId + permission.FunctionId + permission.RoleId).GetHashCode();
 
-            return hashProductId;`
+            return hashProductId;
         }
     }
 }

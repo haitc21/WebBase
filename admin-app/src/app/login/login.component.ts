@@ -15,11 +15,14 @@ export class LoginComponent implements OnInit {
         private _spinner: NgxSpinnerService
     ) { }
 
-    ngOnInit() { }
-
-    login() {
+    ngOnInit() {
         this._spinner.show();
         this._authService.login();
     }
+
+    // login() {
+    //     this._spinner.show();
+    //     this._authService.login();
+    // }
 
 }

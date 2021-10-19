@@ -109,9 +109,9 @@ export class PermissionsComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this._notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
 
-        setTimeout(() => { this.blockedPanel = false; }, 1000);
+        this.blockedPanel = false;
       }, error => {
-        setTimeout(() => { this.blockedPanel = false; }, 1000);
+        this.blockedPanel = false;
       }));
   }
   loadData(roleId) {
@@ -123,9 +123,9 @@ export class PermissionsComponent implements OnInit, OnDestroy {
           this.functions = <TreeNode[]>unflattering;
           this.flattenFunctions = response;
           this.fillPermissions(roleId);
-          setTimeout(() => { this.blockedPanel = false; }, 1000);
+          this.blockedPanel = false;
         }, error => {
-          setTimeout(() => { this.blockedPanel = false; }, 1000);
+          this.blockedPanel = false;
         }));
     }
 
@@ -287,11 +287,11 @@ export class PermissionsComponent implements OnInit, OnDestroy {
           if (element.commandId === SystemConstants.APPROVE_ACTION) {
             this.selectedApproves.push(element.functionId);
           }
-          setTimeout(() => { this.blockedPanel = false; }, 1000);
+          this.blockedPanel = false;
         });
 
       }, error => {
-        setTimeout(() => { this.blockedPanel = false; }, 1000);
+        this.blockedPanel = false;
       }));
   }
   loadAllRoles() {
@@ -299,7 +299,7 @@ export class PermissionsComponent implements OnInit, OnDestroy {
     this.subscription.add(this.rolesService.getAll()
       .subscribe((response: any) => {
         this.roles = response;
-        setTimeout(() => { this.blockedPanel = false; }, 1000);
+        this.blockedPanel = false;
       }));
   }
 
