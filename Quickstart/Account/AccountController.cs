@@ -197,7 +197,14 @@ namespace IdentityServerHost.Quickstart.UI
         [HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
         {
-            await _signInManager.SignOutAsync();
+            if (User?.Identity.IsAuthenticated == true)
+            {
+                // delete local authentication cookie
+                await _signInManager.SignOutAsync();
+
+                // raise the logout event
+                await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
+            }
             var context = await _interaction.GetLogoutContextAsync(logoutId);
             // context bi null phiên bản identity erver 4.0.0 mà oidc-client 1.11.5
             // update identity server là ok
@@ -212,39 +219,39 @@ namespace IdentityServerHost.Quickstart.UI
             return Redirect(context.PostLogoutRedirectUri);
         }
 
-        /// <summary>
-        /// Handle logout page postback
-        /// </summary>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout(LogoutInputModel model)
-        {
-            // build a model so the logged out page knows what to display
-            var vm = await BuildLoggedOutViewModelAsync(model.LogoutId);
+        ///// <summary>
+        ///// Handle logout page postback
+        ///// </summary>
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Logout(LogoutInputModel model)
+        //{
+        //    // build a model so the logged out page knows what to display
+        //    var vm = await BuildLoggedOutViewModelAsync(model.LogoutId);
 
-            if (User?.Identity.IsAuthenticated == true)
-            {
-                // delete local authentication cookie
-                await _signInManager.SignOutAsync();
+        //    if (User?.Identity.IsAuthenticated == true)
+        //    {
+        //        // delete local authentication cookie
+        //        await _signInManager.SignOutAsync();
 
-                // raise the logout event
-                await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
-            }
+        //        // raise the logout event
+        //        await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
+        //    }
 
-            // check if we need to trigger sign-out at an upstream identity provider
-            if (vm.TriggerExternalSignout)
-            {
-                // build a return URL so the upstream provider will redirect back
-                // to us after the user has logged out. this allows us to then
-                // complete our single sign-out processing.
-                string url = Url.Action("Logout", new { logoutId = vm.LogoutId });
+        //    // check if we need to trigger sign-out at an upstream identity provider
+        //    if (vm.TriggerExternalSignout)
+        //    {
+        //        // build a return URL so the upstream provider will redirect back
+        //        // to us after the user has logged out. this allows us to then
+        //        // complete our single sign-out processing.
+        //        string url = Url.Action("Logout", new { logoutId = vm.LogoutId });
 
-                // this triggers a redirect to the external provider for sign-out
-                return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
-            }
+        //        // this triggers a redirect to the external provider for sign-out
+        //        return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
+        //    }
 
-            return View("LoggedOut", vm);
-        }
+        //    return View("LoggedOut", vm);
+        //}
 
         #endregion Logout
 
